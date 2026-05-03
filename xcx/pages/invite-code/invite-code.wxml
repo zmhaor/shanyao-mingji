@@ -1,0 +1,40 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<!-- 自定义导航栏 -->
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">输入邀请码</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<!-- 邀请码输入容器 -->
+<view class="invite-code-container">
+  <view class="invite-code-card">
+    <image class="invite-code-icon" src="/images/邀请.png" mode="aspectFit" />
+    <text class="invite-code-title">输入邀请码</text>
+    <text class="invite-code-desc">输入好友的邀请码，双方都可以获得积分奖励</text>
+    
+    <view class="input-container">
+      <input 
+        class="invite-code-input" 
+        placeholder="请输入邀请码" 
+        value="{{inviteCode}}" 
+        bindinput="onInputChange"
+        placeholder-style="color: #999"
+      />
+    </view>
+    
+    <button 
+      class="submit-btn" 
+      bindtap="onSubmit" 
+      loading="{{loading}}"
+      disabled="{{loading}}"
+    >
+      确认
+    </button>
+  </view>
+</view>
+</view>

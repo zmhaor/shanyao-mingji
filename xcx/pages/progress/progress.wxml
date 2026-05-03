@@ -1,0 +1,173 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<!-- WXS 工具函数 -->
+<wxs module="utils">
+  module.exports = {
+    isSelected: function(arr, id) {
+      if (!arr || !id) return false;
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i] === id) return true;
+      }
+      return false;
+    }
+  }
+</wxs>
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">数据同步</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<view class="progress-page">
+    <view class="deco-orb deco-orb-1"></view>
+    <view class="deco-orb deco-orb-2"></view>
+
+    <view class="progress-list">
+    <view class="tool-card" wx:for="{{progressList}}" wx:key="key">
+      <view class="tool-header">
+        <view class="tool-info">
+          <text class="tool-name">{{item.name}}</text>
+          <view class="compare-badge {{item.compareType}}">{{item.compareText}}</view>
+        </view>
+      </view>
+
+      <view class="data-grid">
+        <!-- 第1行：学习进度 -->
+        <view class="data-row-title">学习历史进度</view>
+        <view class="data-row">
+          <view class="data-item local">
+            <view class="data-label">本地</view>
+            <view class="data-value">
+              <text class="num">{{item.local.reviewedCount}}</text>
+              <text class="unit">条</text>
+            </view>
+          </view>
+          <view class="data-divider">
+            <view class="vs-circle">VS</view>
+          </view>
+          <view class="data-item cloud">
+            <view class="data-label">云端</view>
+            <view class="data-value" wx:if="{{item.cloud}}">
+              <text class="num">{{item.cloud.reviewedCount}}</text>
+              <text class="unit">条</text>
+            </view>
+            <view class="data-value empty" wx:else>
+              <text class="empty-text">无记录</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="hr-line"></view>
+
+        <!-- 第2行：背诵组 -->
+        <view class="data-row-title">自定义背诵组</view>
+        <view class="data-row">
+          <view class="data-item local">
+            <view class="data-label">本地</view>
+            <view class="data-value">
+              <text class="num">{{item.local.groupCount}}</text>
+              <text class="unit">组</text>
+            </view>
+          </view>
+          <view class="data-divider">
+            <view class="vs-circle">VS</view>
+          </view>
+          <view class="data-item cloud">
+            <view class="data-label">云端</view>
+            <view class="data-value" wx:if="{{item.cloud}}">
+              <text class="num">{{item.cloud.groupCount}}</text>
+              <text class="unit">组</text>
+            </view>
+            <view class="data-value empty" wx:else>
+              <text class="empty-text">无记录</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="action-row">
+        <view class="action-btn upload" bindtap="onUpload" data-key="{{item.key}}">
+          <text class="btn-text">上传本地</text>
+          <text class="btn-sub">至云端</text>
+        </view>
+        <view class="action-btn download" bindtap="onDownload" data-key="{{item.key}}">
+          <text class="btn-text">下载云端</text>
+          <text class="btn-sub">至本地</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading-overlay" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+  </view>
+</view>
+
+<!-- 同步数据类型选择弹窗 -->
+<view class="sync-type-modal-mask {{isSyncModalClosing ? 'closing' : ''}}" wx:if="{{showSyncTypeModal}}" bindtap="onCloseSyncTypeModal">
+  <view class="sync-type-modal-panel {{isSyncModalClosing ? 'closing' : ''}}" catchtap="preventModalTap">
+    <view class="sync-type-modal-header">
+      <text class="sync-type-modal-title">{{syncTypeModalMode === 'upload' ? '选择上传数据' : '选择下载数据'}}</text>
+      <text class="sync-type-modal-close" bindtap="onCloseSyncTypeModal">×</text>
+    </view>
+
+    <view class="sync-type-modal-subtitle">选择要{{syncTypeModalMode === 'upload' ? '上传' : '下载'}}的数据类型</view>
+    
+    <!-- 数据类型选择 -->
+    <view class="sync-type-tag-list">
+      <view 
+        class="sync-type-tag {{dataTypeCheckMap[item] ? 'active' : ''}}"
+        wx:for="{{availableDataTypes}}"
+        wx:key="*this"
+        data-type="{{item}}"
+        bindtap="onToggleDataType"
+      >
+        <text class="sync-type-tag-text">{{item === 'history' ? '检查记录' : item === 'groups' ? '背诵组' : item === 'formulaVersion' ? '方歌版本' : '隐藏映射'}}</text>
+      </view>
+    </view>
+
+    <!-- 历史记录选择（仅下载模式显示） -->
+    <view class="sync-history-section" wx:if="{{syncTypeModalMode === 'download' && syncHistoryList.length > 0}}">
+      <view class="sync-history-title" bindtap="onToggleHistorySelector">
+        <text>同步历史</text>
+        <text class="sync-history-hint">（可多选，不选则下载最新）</text>
+        <text class="sync-history-arrow">{{showHistorySelector ? '▲' : '▼'}}</text>
+      </view>
+      <view class="sync-history-card-list" wx:if="{{showHistorySelector}}">
+        <view 
+          class="sync-history-card {{utils.isSelected(selectedHistoryIds, item.id) ? 'active' : ''}}"
+          wx:for="{{syncHistoryList}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onSelectHistory"
+        >
+          <view class="sync-history-card-info">
+            <text class="sync-history-card-time">上传时间：{{item.createdAt}}</text>
+            <view class="sync-history-card-tags">
+              <text class="sync-history-card-tag" wx:for="{{item.dataTypes}}" wx:for-item="type" wx:key="*this">
+                {{type === 'history' ? '记录' : type === 'groups' ? '背诵组' : type === 'formulaVersion' ? '方歌' : ''}}
+              </text>
+            </view>
+          </view>
+          <view class="sync-history-card-check" wx:if="{{utils.isSelected(selectedHistoryIds, item.id)}}">✓</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 无历史记录提示 -->
+    <view class="sync-no-history" wx:if="{{syncTypeModalMode === 'download' && syncHistoryList.length === 0}}">
+      <text>将从当前云端数据下载</text>
+    </view>
+
+    <view class="sync-type-action-row">
+      <view class="sync-type-btn cancel" bindtap="onCloseSyncTypeModal">取消</view>
+      <view class="sync-type-btn confirm {{syncTypeModalMode === 'upload' ? 'upload' : 'download'}}" bindtap="onConfirmSyncType">
+        {{syncTypeModalMode === 'upload' ? '确认上传' : '确认下载'}}
+      </view>
+    </view>
+  </view>
+</view>
+</view>

@@ -1,0 +1,47 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">用户反馈</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<view class="feedback-page">
+  <view class="section">
+    <text class="label">反馈内容<text class="required">*</text></text>
+    <textarea 
+      class="content-input" 
+      placeholder="请详细描述您遇到的问题或建议..." 
+      maxlength="500" 
+      bindinput="onContentInput"
+      value="{{content}}"
+    />
+    <text class="word-count">{{content.length}}/500</text>
+  </view>
+
+
+
+  <view class="section" style="padding-bottom: 20rpx;">
+    <view style="display: flex; justify-content: space-between; align-items: center;">
+      <text class="label" style="margin-bottom: 0;">匿名反馈</text>
+      <switch checked="{{isAnonymous}}" bindchange="onAnonymousChange" color="#6366f1" />
+    </view>
+    <text style="font-size: 12px; color: #94a3b8; display: block; margin-top: 10rpx;">开启后，他人无法查看您的真实身份信息</text>
+  </view>
+
+  <button 
+    class="submit-btn {{submitting || !content ? 'disabled' : ''}}" 
+    disabled="{{submitting || !content}}"
+    bindtap="onSubmit"
+  >
+    {{submitting ? '提交中...' : '提交反馈'}}
+  </button>
+
+  <view class="hint">
+    您的反馈是系统优化的动力，感谢参与！
+  </view>
+</view>
+</view>

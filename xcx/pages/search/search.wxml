@@ -1,0 +1,80 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="nav-top search-page-top">
+        <view class="logo-section">
+          <image class="logo-icon" src="/images/默认.jpg" mode="aspectFill"></image>
+          <text class="logo-text">全站搜索</text>
+        </view>
+      </view>
+      <view class="nav-bottom search-page-nav">
+        <view class="search-back-btn" bindtap="onBack">
+          <text class="search-back-arrow">‹</text>
+        </view>
+        <view class="search-box">
+          <image class="search-icon" src="/images/搜索.png" mode="aspectFill"></image>
+          <input
+            class="search-input"
+            placeholder="搜索全站内容"
+            value="{{searchKeyword}}"
+            bindinput="onSearchInput"
+            bindconfirm="onSearchConfirm"
+            focus
+            confirm-type="search"
+          />
+          <text class="clear-icon" wx:if="{{searchKeyword}}" bindtap="onClearSearch">×</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="main-content search-page-content">
+    <scroll-view class="search-page-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <view class="global-search-container" wx:if="{{globalSearchResults.length > 0}}">
+        <view class="search-section-title">
+          <text>发现相关内容</text>
+          <view class="title-line"></view>
+        </view>
+
+        <view class="tool-result-group" wx:for="{{globalSearchResults}}" wx:key="toolKey">
+          <view class="tool-result-header">
+            <image class="tool-result-icon" src="{{item.toolIcon}}"></image>
+            <text class="tool-result-name">{{item.toolName}}</text>
+          </view>
+
+          <view class="search-item-list">
+            <view
+              class="search-result-item"
+              wx:for="{{item.items}}"
+              wx:for-item="subItem"
+              wx:key="id"
+              bindtap="onGlobalResultTap"
+              data-tool="{{item.toolKey}}"
+              data-target-key="{{subItem.targetKey}}"
+            >
+              <view class="item-main">
+                <text class="item-title">{{subItem.title}}</text>
+                <text class="item-snippet">{{subItem.snippet}}</text>
+              </view>
+              <image class="item-arrow" src="/images/更多.png"></image>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{searchKeyword && globalSearchResults.length === 0}}">
+        <text class="empty-icon">📭</text>
+        <text class="empty-text">没有找到相关内容</text>
+        <text class="empty-hint">试试其他关键词吧</text>
+      </view>
+
+      <view class="empty-state" wx:if="{{!searchKeyword}}">
+        <text class="empty-icon">🔎</text>
+        <text class="empty-text">输入关键词开始搜索</text>
+        <text class="empty-hint">支持搜索工具和条文内容</text>
+      </view>
+
+      <view class="bottom-safe-area"></view>
+    </scroll-view>
+  </view>
+</view>

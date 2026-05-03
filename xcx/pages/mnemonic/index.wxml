@@ -1,0 +1,139 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="page-container" style="padding-top: {{statusBarHeight + 44}}px;">
+  <view class="deco-orb deco-orb-1"></view>
+  <view class="deco-orb deco-orb-2"></view>
+  <view class="deco-orb deco-orb-3"></view>
+
+  <!-- ========== 仪表盘模式 ========== -->
+  <block wx:if="{{mode === 'dashboard'}}">
+    <view class="dashboard-area">
+      <!-- 顶部科目卡片 -->
+      <view class="subject-glass-card">
+        <view class="subject-info-row">
+          <image class="subject-icon" src="{{currentDb.icon}}" mode="aspectFit"></image>
+          <view class="subject-text">
+            <view class="subject-name-row">
+              <text class="subject-name">{{currentDb.name}}{{selectedLevel !== 'all' ? ' (' + (selectedLevel == '1' ? '一级' : '二级') + ')' : ''}}</text>
+              <text class="subject-change-btn" bindtap="onChangeDb">修改 ></text>
+            </view>
+            <view class="progress-container">
+              <view class="progress-bar">
+                <view class="progress-fill" style="width: {{masteredCount / totalCount * 100}}%; background: {{currentDb.accentColor}}"></view>
+              </view>
+              <view class="progress-stats">
+                <text class="progress-val">{{masteredCount}} / {{totalCount}}</text>
+                <text class="progress-remain">剩余 {{totalCount - masteredCount}} 条</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 今日计划板块 -->
+      <view class="today-plan-card">
+        <view class="plan-header">
+          <text>今日计划</text>
+          <text class="plan-edit-btn" bindtap="onOpenPlanModal">修改计划</text>
+        </view>
+        <view class="plan-stats-grid">
+          <view class="plan-stat">
+            <text class="stat-label">已新学</text>
+            <view class="stat-data">
+              <text class="stat-count">{{todayNew}}</text>
+              <text class="stat-target"> / {{targetNew}}</text>
+            </view>
+          </view>
+          <view class="plan-stat">
+            <text class="stat-label">已复习</text>
+            <view class="stat-data">
+              <text class="stat-count">{{todayReview}}</text>
+              <text class="stat-target"> / {{targetReview}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 操作按钮 -->
+        <view class="plan-actions">
+          <view class="plan-btn primary" bindtap="onStartQuiz" data-mode="study">学习</view>
+          <view class="plan-btn secondary" bindtap="onStartQuiz" data-mode="review">
+            复习
+            <view class="due-badge" wx:if="{{dueCount > 0}}">{{dueCount}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 选择模式 ========== -->
+  <block wx:if="{{mode === 'select'}}">
+    <!-- 顶部标题 -->
+    <view class="header" style="padding-top: {{statusBarHeight}}px;">
+      <view class="header-inner">
+        <text class="header-title">选择科目</text>
+        <view class="back-btn-mini" bindtap="onBackToDashboard" wx:if="{{currentDb}}">返回</view>
+      </view>
+    </view>
+
+    <!-- 数据库列表 -->
+    <view class="db-grid">
+      <view class="db-card" wx:for="{{dbList}}" wx:key="key"
+            catchtap="{{item.hasLevels ? '' : 'onSelectDb'}}" 
+            data-key="{{item.key}}"
+            style="--accent: {{item.accentColor}};">
+        
+        <!-- 装饰背景 (流光渐变) -->
+        <view class="db-card-bg" style="background: {{item.gradient}};"></view>
+        
+        <view class="db-card-content">
+          <view class="db-card-top">
+            <image class="db-icon" src="{{item.icon}}" mode="aspectFit"></image>
+            <view class="db-info">
+              <text class="db-name">{{item.name}}</text>
+              <view class="db-count">背诵进展 {{item.progress}}%</view>
+            </view>
+          </view>
+          
+          <!-- 分级选择按钮 (Segmented Controller 风格) -->
+          <view class="db-level-options" wx:if="{{item.hasLevels}}">
+            <view class="level-btn" catchtap="onSelectDb" data-key="{{item.key}}" data-level="all">全部内容</view>
+            <view class="level-btn" catchtap="onSelectDb" data-key="{{item.key}}" data-level="1">一级重点</view>
+            <view class="level-btn" catchtap="onSelectDb" data-key="{{item.key}}" data-level="2">二级条目</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- ========== 计划修改弹窗 ========== -->
+  <view class="modal-mask" wx:if="{{showPlanModal}}" bindtap="onClosePlanModal">
+    <view class="plan-modal-card glass-card" catchtap="true">
+      <view class="modal-header">修改背诵计划</view>
+      <view class="modal-body">
+        <view class="input-group">
+          <text class="input-label">每日新学数量</text>
+          <input class="plan-input" type="number" value="{{planTargetNew}}" bindinput="onTargetInput" />
+        </view>
+        <view class="input-divider">
+          <view class="divider-line"></view>
+          <text class="divider-text">联动换算</text>
+          <view class="divider-line"></view>
+        </view>
+        <view class="input-group">
+          <text class="input-label">预计完成天数</text>
+          <input class="plan-input" type="number" value="{{planDays}}" bindinput="onDaysInput" />
+        </view>
+        <view class="input-group">
+          <text class="input-label">每日复习量 (建议)</text>
+          <input class="plan-input" type="number" value="{{planTargetReview}}" bindinput="onTargetReviewInput" />
+        </view>
+        <view class="modal-tip">💡 调整“新学”或“天数”时，系统会自动推荐对应的“复习量”</view>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-btn cancel" bindtap="onClosePlanModal">取消</view>
+        <view class="modal-btn confirm" bindtap="onSavePlan">确认保存</view>
+      </view>
+    </view>
+  </view>
+
+  </view>
+</view>

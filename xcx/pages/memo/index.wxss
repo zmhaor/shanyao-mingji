@@ -1,0 +1,214 @@
+page {
+  --text-primary: #1c1c1e;
+  --text-secondary: #636366;
+  --text-tertiary: #8e8e93;
+  --bg-color: #f2f2f7;
+  --card-bg: #ffffff;
+  --brand-color: #007aff;
+  
+  background: var(--bg-color);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", sans-serif;
+}
+
+::-webkit-scrollbar, scroll-view ::-webkit-scrollbar {
+  width: 0 !important; height: 0 !important; color: transparent !important; display: none !important;
+}
+
+view, text, scroll-view, input, button { box-sizing: border-box; }
+
+.memo-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.header-wrapper {
+  background: rgba(242, 242, 247, 0.98); 
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+  padding-bottom: 10px;
+  padding-left: 16px;
+  padding-right: 16px;
+  z-index: 999;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  border-bottom: 0.25px solid rgba(0,0,0,0.05);
+}
+
+.header-content {
+  margin-top: 40px; 
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.header-row { display: flex; justify-content: space-between; align-items: flex-end; padding-right: 105px; box-sizing: border-box; }
+
+.page-title { 
+  font-size: 28px; font-weight: 800; color: var(--text-primary); 
+  line-height: 1.1; letter-spacing: -0.5px;
+}
+
+.home-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.home-btn:active {
+  background: #f8f9fa;
+  transform: scale(0.93);
+  box-shadow: 0 0.5px 1.5px rgba(0,0,0,0.05);
+  border-color: #d0d0d0;
+}
+
+.home-icon {
+  width: 16px;
+  height: 16px;
+  line-height: 1;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+  padding-bottom: 100px;
+}
+
+.input-area {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.memo-input {
+  width: 100%;
+  min-height: 150px;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0;
+  border: none;
+  resize: none;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.placeholder {
+  color: var(--text-tertiary);
+}
+
+.action-area {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.save-btn {
+  flex: 1;
+  background-color: var(--brand-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,122,255,0.3);
+  transition: all 0.2s ease;
+}
+
+.save-btn:active {
+  background-color: #0062cc;
+  transform: scale(0.97);
+  box-shadow: 0 1px 3px rgba(0,122,255,0.2);
+}
+
+.clear-btn {
+  flex: 1;
+  background-color: #f2f2f7;
+  color: var(--text-secondary);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.clear-btn:active {
+  background-color: #e5e5ea;
+  transform: scale(0.97);
+  box-shadow: 0 0.5px 1.5px rgba(0,0,0,0.05);
+  border-color: #d0d0d0;
+}
+
+.history-area {
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.history-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text-primary);
+}
+
+.history-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.history-item:active {
+  background-color: rgba(0,122,255,0.04);
+}
+
+.history-item:last-child {
+  border-bottom: none;
+}
+
+.history-content {
+  font-size: 14px;
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: 5px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.history-time {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.empty-history {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-tertiary);
+  font-size: 14px;
+}

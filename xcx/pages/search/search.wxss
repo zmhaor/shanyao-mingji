@@ -1,0 +1,29 @@
+@import "../index/index.wxss";
+
+.search-page-top {
+  padding-right: 0;
+}
+
+.search-page-nav {
+  padding-bottom: 4px;
+}
+
+.search-page-content {
+  padding-top: calc(env(safe-area-inset-top) + 140px) !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  height: auto !important;
+  min-height: 100vh;
+  overflow: visible !important;
+  align-items: stretch;
+}
+
+.search-page-scroll {
+  width: 100%;
+  height: calc(100vh - env(safe-area-inset-top) - 140px);
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.empty-state {
+  min-height: 360px;
+}

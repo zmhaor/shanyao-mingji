@@ -1,0 +1,256 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+  <!-- WXS 工具函数 -->
+  <wxs module="utils">
+    module.exports = {
+      isSelected: function(arr, id) {
+        if (!arr || !id) return false;
+        for (var i = 0; i < arr.length; i++) {
+          if (arr[i] === id) return true;
+        }
+        return false;
+      }
+    }
+  </wxs>
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="nav-top">
+        <view class="logo-section">
+          <image class="logo-icon" src="/images/默认.jpg" mode="aspectFill"></image>
+          <text class="logo-text">山药铭记</text>
+        </view>
+      </view>
+      <view class="nav-bottom">
+        <view class="search-box" bindtap="openSearchPage">
+          <image class="search-icon" src="/images/搜索.png" mode="aspectFill"></image>
+          <text class="search-placeholder">搜索全站内容</text>
+        </view>
+      </view>
+      <!-- 滚动公告栏 -->
+      <view class="notice-scroll-wrap" wx:if="{{scrollNotices && scrollNotices.length > 0}}">
+        <text class="notice-mini-icon">📢</text>
+        <view class="notice-marquee-container">
+          <view class="notice-marquee-content">
+            <!-- 重复两组以实现无缝衔接滚动 -->
+            <block wx:for="{{2}}" wx:for-item="loopIndex" wx:key="loopIndex">
+              <view 
+                class="notice-item" 
+                wx:for="{{scrollNotices}}" 
+                wx:key="index"
+                bindtap="onTapNotice"
+              >
+                <text class="notice-text">{{item.content}}</text>
+              </view>
+            </block>
+          </view>
+        </view>
+      </view>
+      <!-- 发现标题与分类栏 (正式固定在导航栏) -->
+      <view class="fixed-top-section">
+        <view class="main-title">
+          <text>发现</text>
+          <text class="highlight">超好用</text>
+          <text>的学习工具</text>
+        </view>
+        <text class="subtitle">提升效率，从这里开始。</text>
+
+        <view class="category-header">
+          <scroll-view class="category-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+            <view class="category-list">
+              <view
+                class="category-item {{currentCategory === index ? 'active' : ''}}"
+                wx:for="{{categories}}"
+                wx:key="index"
+                data-index="{{index}}"
+                bindtap="onCategoryTap"
+              >
+                {{item}}
+              </view>
+            </view>
+          </scroll-view>
+          <view class="fab-settings" bindtap="onShowSettings" hover-class="none">
+            <image src="/images/更多.png" class="fab-icon"></image>
+            <text class="fab-text">数据同步</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 主内容区 -->
+  <view class="main-content {{scrollNotices && scrollNotices.length > 0 ? 'has-notice' : ''}}">
+    <!-- 背景装饰仅在主页显示 -->
+    <view class="deco-orb deco-orb-1"></view>
+    <view class="deco-orb deco-orb-2"></view>
+    <view class="deco-orb deco-orb-3"></view>
+
+    <!-- 工具列表滚动区域 -->
+    <scroll-view 
+      class="scroll-tools-container" 
+      scroll-y 
+      enhanced 
+      show-scrollbar="{{false}}"
+    >
+      <view class="load-status {{loading ? 'is-loading' : ''}} {{usingCachedTools ? 'is-cache' : ''}}" wx:if="{{showLoadStatus}}">
+        <view class="load-status-spinner" wx:if="{{loading}}"></view>
+        <text class="load-status-text">{{loadStatusText}}</text>
+      </view>
+
+      <view class="tools-grid">
+        <view
+          class="tool-card"
+          hover-class="none"
+          wx:for="{{filteredTools}}"
+          wx:key="name"
+          data-id="{{item.id}}"
+          data-name="{{item.name}}"
+          bindtap="onToolTap"
+        >
+          <view class="tool-favorite" catchtap="onFavoriteTap" data-id="{{item.id}}" hover-class="none">
+            <image class="favorite-icon-img {{item.isFavorite ? 'active' : ''}}" src="/images/收藏角标.png" mode="aspectFit"></image>
+          </view>
+          <view class="tool-icon-wrapper">
+            <image class="tool-icon-img" src="{{item.icon}}" mode="aspectFit"></image>
+          </view>
+          <text class="tool-name">{{item.name}}</text>
+          <text class="tool-desc">{{item.description}}</text>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{filteredTools.length === 0 && !loading}}">
+        <text class="empty-icon">{{usingCachedTools ? '📦' : '📭'}}</text>
+        <text class="empty-text">{{usingCachedTools ? '本地缓存中暂无可显示工具' : '没有找到相关工具'}}</text>
+        <text class="empty-hint" wx:if="{{showLoadStatus}}">{{loadStatusText}}</text>
+      </view>
+      
+      <!-- 底部留白，避免被 TabBar 遮挡 -->
+      <view class="bottom-safe-area"></view>
+    </scroll-view>
+
+    <!-- 设置弹窗 -->
+    <view class="settings-modal-mask {{isModalClosing ? 'closing' : ''}}" wx:if="{{showSettingsModal}}" bindtap="onCloseSettingsModal">
+      <view class="settings-modal-panel {{isModalClosing ? 'closing' : ''}}" catchtap="preventModalTap">
+        <view class="settings-modal-header">
+          <text class="settings-modal-title">学习记录同步</text>
+          <text class="settings-modal-close" bindtap="onCloseSettingsModal">×</text>
+        </view>
+
+        <view class="settings-modal-subtitle">选择学习工具</view>
+        <view class="settings-tool-list">
+          <view
+            class="settings-tool-item {{selectedSyncKey === item.toolName ? 'active' : ''}}"
+            wx:for="{{settingsTools}}"
+            wx:key="toolName"
+            data-key="{{item.toolName}}"
+            bindtap="onSelectSyncTool"
+          >
+            <text class="settings-tool-name">{{item.label}}</text>
+          </view>
+        </view>
+
+        <!-- 上传/下载按钮（初始显示） -->
+        <view class="settings-action-row" wx:if="{{!showSyncActions}}">
+          <view class="settings-btn sync" bindtap="onSyncSelectedTool">
+            <text class="settings-btn-text">上传本地数据</text>
+          </view>
+          <view class="settings-btn download" bindtap="onDownloadSelectedTool">
+            <text class="settings-btn-text">下载云端数据</text>
+          </view>
+        </view>
+
+        <!-- 同步操作区域（点击上传/下载后显示） -->
+        <block wx:if="{{showSyncActions}}">
+          <!-- 数据类型选择 -->
+          <view class="settings-modal-subtitle">选择数据类型</view>
+          <view class="sync-type-tag-list">
+            <view 
+              class="sync-type-tag {{dataTypeCheckMap[item] ? 'active' : ''}}"
+              wx:for="{{availableDataTypes}}"
+              wx:key="*this"
+              data-type="{{item}}"
+              bindtap="onToggleDataType"
+            >
+              <text class="sync-type-tag-text">{{item === 'history' ? '检查记录' : item === 'groups' ? '背诵组' : item === 'formulaVersion' ? '方歌版本' : '隐藏映射'}}</text>
+            </view>
+          </view>
+
+          <!-- 历史记录选择（仅下载模式显示） -->
+          <view class="sync-history-section" wx:if="{{syncTypeModalMode === 'download' && syncHistoryList.length > 0}}">
+            <view class="sync-history-title" bindtap="onToggleHistorySelector">
+              <text>同步历史</text>
+              <text class="sync-history-hint">（可多选，不选则下载最新）</text>
+              <text class="sync-history-arrow">{{showHistorySelector ? '▲' : '▼'}}</text>
+            </view>
+            <view class="sync-history-card-list" wx:if="{{showHistorySelector}}">
+              <view 
+                class="sync-history-card {{utils.isSelected(selectedHistoryIds, item.id) ? 'active' : ''}}"
+                wx:for="{{syncHistoryList}}"
+                wx:key="id"
+                data-id="{{item.id}}"
+                bindtap="onSelectHistory"
+              >
+                <view class="sync-history-card-info">
+                  <text class="sync-history-card-time">上传时间：{{item.createdAt}}</text>
+                  <view class="sync-history-card-tags">
+                    <text class="sync-history-card-tag" wx:for="{{item.dataTypes}}" wx:for-item="type" wx:key="*this">
+                      {{type === 'history' ? '记录' : type === 'groups' ? '背诵组' : type === 'formulaVersion' ? '方歌' : ''}}
+                    </text>
+                  </view>
+                </view>
+                <view class="sync-history-card-check" wx:if="{{utils.isSelected(selectedHistoryIds, item.id)}}">✓</view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 无历史记录提示 -->
+          <view class="sync-no-history" wx:if="{{syncTypeModalMode === 'download' && syncHistoryList.length === 0}}">
+            <text>将从当前云端数据下载</text>
+          </view>
+
+          <view class="sync-type-action-row">
+            <view class="sync-type-btn cancel" bindtap="onCloseSyncTypeModal">返回</view>
+            <view class="sync-type-btn confirm {{syncTypeModalMode === 'upload' ? 'upload' : 'download'}}" bindtap="onConfirmSyncType">
+              {{syncTypeModalMode === 'upload' ? '确认上传' : '确认下载'}}
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+    <!-- 公告详情弹窗 -->
+    <view class="notice-modal-mask {{isNoticeModalClosing ? 'closing' : ''}}" wx:if="{{showNoticeModal}}" bindtap="onCloseNoticeModal">
+      <view class="notice-modal-panel {{isNoticeModalClosing ? 'closing' : ''}}" catchtap="preventModalTap">
+        <view class="notice-modal-header">
+          <view class="header-title-wrap">
+            <text class="notice-modal-title">公告通知</text>
+            <view class="notice-count" wx:if="{{scrollNotices.length > 0}}">{{scrollNotices.length}} 条</view>
+          </view>
+          <view class="notice-modal-close" bindtap="onCloseNoticeModal">
+            <text>×</text>
+          </view>
+        </view>
+
+        <scroll-view class="notice-list-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+          <view class="notice-list">
+            <view class="notice-detail-card" wx:for="{{scrollNotices}}" wx:key="index">
+              <view class="card-header">
+                <view class="card-icon">📌</view>
+                <text class="card-title">{{item.title || '系统公告'}}</text>
+              </view>
+              <view class="card-body">
+                <text class="card-content" user-select>{{item.content}}</text>
+              </view>
+              <view class="card-footer" wx:if="{{item.createdAt}}">
+                <text class="card-time">{{item.createdAt}}</text>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+
+        <view class="notice-modal-footer">
+          <view class="modal-confirm-btn" bindtap="onCloseNoticeModal">我知道了</view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</view>

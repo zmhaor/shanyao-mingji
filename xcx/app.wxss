@@ -1,0 +1,236 @@
+/* 全局样式 */
+page {
+  --primary: #6366f1;
+  --primary-light: #818cf8;
+  --primary-dark: #4f46e5;
+  --secondary: #8b5cf6;
+  --accent: #ec4899;
+  --accent-light: #f472b6;
+  --background: #f0f2f8;
+  --surface: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 8px 30px rgba(99, 102, 241, 0.12);
+  --glow-primary: rgba(99, 102, 241, 0.15);
+  --glow-accent: rgba(236, 72, 153, 0.12);
+  --card-blue: #eff6ff;
+  --card-purple: #f5f3ff;
+  --card-pink: #fdf2f8;
+  --card-amber: #fffbeb;
+  --card-emerald: #ecfdf5;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  /* 适配变量 */
+  --max-width: 540px;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--background);
+  color: var(--text-primary);
+  -webkit-tap-highlight-color: transparent;
+
+  /* 全局容器限宽逻辑 */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+view, text, scroll-view, input, button {
+  box-sizing: border-box;
+}
+
+
+@media screen and (min-width: 500px) {
+  /* 大屏适配核心逻辑 */
+  page {
+    display: block !important;
+    max-width: var(--max-width) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
+    position: relative;
+    background: #fff;
+    min-height: 100vh !important;
+    left: 0; right: 0;
+  }
+
+  /* 固定定位在主体中居中的通用类 - 采用 margin-auto 方案以兼容各种动画 */
+  .fixed-center, .modal-panel-adapter, page-container {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: var(--max-width) !important;
+    max-width: var(--max-width) !important;
+    z-index: 99999;
+  }
+
+  /* 针对靠右设置的固定定位元素的适配类 */
+  .fixed-right-adapter {
+    right: calc(50% - (var(--max-width) / 2) + var(--right-offset, 10px)) !important;
+    left: auto !important;
+  }
+
+  /* 平板/PC端 增加内部边距，使显示更舒展 */
+  .main-content, .container, .header-wrapper, .read-item, .view-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* 通用容器 */
+.container {
+  padding: 0 12px;
+}
+
+/* 卡片样式 */
+.card {
+  background: var(--surface);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 按钮样式 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+/* 标签样式 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.tag-active {
+  background: var(--text-primary);
+  color: white;
+}
+
+.tag-default {
+  background: var(--background);
+  color: var(--text-secondary);
+}
+
+/* 安全区域适配 */
+.safe-area-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ===== 夜间模式全局变量覆盖 ===== */
+.dark-mode {
+  --primary: #818cf8;
+  --primary-light: #a5b4fc;
+  --primary-dark: #6366f1;
+  --secondary: #a78bfa;
+  --accent: #f472b6;
+  --background: #0f0f13;
+  --surface: #1c1c24;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #2d2d3a;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 8px 30px rgba(99, 102, 241, 0.2);
+  --glow-primary: rgba(99, 102, 241, 0.2);
+  --glow-accent: rgba(236, 72, 153, 0.15);
+  --card-blue: #1a1f35;
+  --card-purple: #1e1a35;
+  --card-pink: #2a1a28;
+  --card-amber: #28230f;
+  --card-emerald: #0f2820;
+  background-color: var(--background) !important;
+  color: var(--text-primary) !important;
+}
+
+/* 适配微信小程序 page 标签在夜间模式下的背景 */
+page.dark-mode {
+  background-color: #0f0f13 !important;
+}
+
+/* 夜间模式：study 页面专属变量 */
+.dark-mode-page {
+  --text-primary: #e8eaf0;
+  --text-secondary: #9ba3b5;
+  --text-tertiary: #6b7280;
+  --bg-color: #0f0f13;
+  --card-bg: #1c1c24;
+  --brand-color: #818cf8;
+  --success-color: #34d399;
+  --success-bg: #0d2e22;
+  --error-color: #f87171;
+  --error-bg: #2d1515;
+  --warning-bg: #2a2010;
+  background: var(--bg-color) !important;
+}
+
+/* 夜间模式：通用卡片 */
+.dark-mode .card,
+.dark-mode-page .card {
+  background: #1c1c24 !important;
+  border-color: #2d2d3a !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35) !important;
+}
+
+/* 夜间模式：通用按钮 */
+.dark-mode .btn-primary,
+.dark-mode-page .btn-primary {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+}
+
+/* 夜间模式切换按钮（全局可复用） */
+.dark-toggle-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.dark-toggle-btn.dark {
+  background: #2d2d3a;
+  border-color: #3d3d4a;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+}
+
+.dark-toggle-btn:active {
+  transform: scale(0.9);
+  opacity: 0.85;
+}

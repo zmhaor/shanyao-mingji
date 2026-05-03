@@ -1,0 +1,288 @@
+.custom-nav {
+  background: linear-gradient(180deg, #f0f4ff 0%, var(--background) 100%);
+  padding: 10px 12px;
+  padding-top: 60px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+}
+
+.back-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+  position: relative;
+  z-index: 10;
+}
+
+.back-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.nav-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.placeholder {
+  width: 32px;
+}
+
+.study-time-container {
+  padding: 12px;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
+}
+
+.total-card {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 255, 0.95) 100%);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+}
+
+.total-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.total-label {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.total-icon {
+  font-size: 24px;
+}
+
+.total-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1e293b;
+  display: block;
+  margin-bottom: 8px;
+  font-family: 'DIN Condensed', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.total-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.tool-list-section {
+  background: white;
+  border-radius: 20px;
+  padding: 16px;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.tool-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tool-card {
+  background: #f8fafc;
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.tool-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.tool-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tool-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.tool-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tool-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.tool-category {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.tool-stats {
+  display: flex;
+  align-items: center;
+}
+
+.usage-count {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.tool-duration-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.duration-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.tool-duration-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.duration-label {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.duration-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.empty-hint {
+  font-size: 13px;
+  color: #94a3b8;
+  text-align: center;
+}
+
+/* 深色模式 */
+.dark-mode .total-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 1) 0%, rgba(30, 41, 59, 0.95) 100%);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.dark-mode .total-label {
+  color: #94a3b8;
+}
+
+.dark-mode .total-value {
+  color: #f1f5f9;
+}
+
+.dark-mode .total-hint {
+  color: #64748b;
+}
+
+.dark-mode .tool-list-section {
+  background: #1e293b;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .section-title {
+  color: #f1f5f9;
+}
+
+.dark-mode .tool-card {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dark-mode .tool-name {
+  color: #f1f5f9;
+}
+
+.dark-mode .tool-category {
+  color: #64748b;
+}
+
+.dark-mode .usage-count {
+  color: #818cf8;
+  background: rgba(129, 140, 248, 0.2);
+}
+
+.dark-mode .tool-duration-bar {
+  background: #475569;
+}
+
+.dark-mode .duration-label {
+  color: #64748b;
+}
+
+.dark-mode .duration-value {
+  color: #f1f5f9;
+}
+
+.dark-mode .empty-text {
+  color: #f1f5f9;
+}
+
+.dark-mode .empty-hint {
+  color: #64748b;
+}

@@ -1,0 +1,118 @@
+/* 自定义导航栏 */
+.custom-nav {
+  background: linear-gradient(180deg, #f0f4ff 0%, var(--background) 100%);
+  padding: 10px 12px;
+  padding-top: calc(env(safe-area-inset-top) + 90px);
+}
+
+.nav-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-btn {
+  width: 32px;
+  height: 32px;
+  background: var(--surface);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow);
+}
+
+.back-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.nav-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.placeholder {
+  width: 32px;
+}
+
+/* 邀请码输入容器 */
+.invite-code-container {
+  padding: 24px 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.invite-code-card {
+  width: 100%;
+  max-width: 300px;
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 24px 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.invite-code-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.invite-code-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.invite-code-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.input-container {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.invite-code-input {
+  width: 100%;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 12px;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--background);
+}
+
+.submit-btn {
+  width: 100%;
+  height: 44px;
+  background: var(--primary);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 12px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn::after {
+  border: none;
+}
+
+.submit-btn[loading] {
+  opacity: 0.8;
+}
+
+.submit-btn[disabled] {
+  opacity: 0.6;
+}

@@ -1,0 +1,1 @@
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.bound=void 0;var bound=function(o,e,t){var r=o;return void 0!==e&&(r=Math.max(o,e)),void 0!==t&&(r=Math.min(r,t)),r};exports.bound=bound;

@@ -1,0 +1,14 @@
+{
+    "component": true,
+    "usingComponents": {
+        "wux-popup": "../popup/index",
+        "wux-prompt": "../prompt/index",
+        "wux-cell": "../cell/index",
+        "wux-radio": "../radio/index",
+        "wux-radio-group": "../radio-group/index",
+        "wux-checkbox": "../checkbox/index",
+        "wux-checkbox-group": "../checkbox-group/index",
+        "wux-select-menu": "./select-menu",
+        "wux-virtual-select-menu": "./virtual-select-menu"
+    }
+}

@@ -1,0 +1,31 @@
+const express = require("express")
+
+const authRoutes = require("./auth")
+const configRoutes = require("./config")
+const shopRoutes = require("./shop")
+const statsRoutes = require("./stats")
+const toolRoutes = require("./tools")
+const userRoutes = require("./users")
+const categoryRoutes = require("./categories")
+const progressRoutes = require("./progress")
+const feedbackRoutes = require("./feedback")
+const noticeRoutes = require("./notices")
+const materialRoutes = require("./materials")
+const contentRoutes = require("./contents")
+
+const router = express.Router()
+
+router.use("/login", authRoutes)
+router.use("/users", userRoutes)
+router.use("/tools", toolRoutes)
+router.use("/categories", categoryRoutes)
+router.use("/shop", shopRoutes)
+router.use("/stats", statsRoutes)
+router.use("/config", configRoutes)
+router.use("/progress", progressRoutes)
+router.use("/feedback", feedbackRoutes)
+router.use("/notices", noticeRoutes)
+router.use("/materials", materialRoutes)
+router.use("/content", contentRoutes)
+
+module.exports = router

@@ -1,0 +1,89 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="onBack">
+        <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+      </view>
+      <text class="nav-title">反馈详情</text>
+      <view class="placeholder"></view>
+    </view>
+  </view>
+
+  <scroll-view scroll-y class="scroll-wrapper" scroll-into-view="{{scrollTo}}">
+    <!-- 主反馈内容 -->
+    <view class="main-feedback" wx:if="{{feedback}}">
+      <view class="fb-header">
+        <image class="avatar" src="{{feedback.user ? feedback.user.avatar_url : '/images/默认.jpg'}}" mode="aspectFill"></image>
+        <view class="info">
+          <text class="nickname">{{feedback.user ? feedback.user.nick_name : '匿名用户'}}</text>
+          <text class="time">{{feedback.create_time_formatted}}</text>
+        </view>
+        <view style="display: flex; align-items: center;">
+          <view class="delete-btn" wx:if="{{feedback.user_id === currentUserId}}" bindtap="deleteFeedback">
+            <image src="/images/清除.png" class="delete-icon"></image>
+          </view>
+          <view class="status {{feedback.status}}">
+            {{feedback.status === 'pending' ? '待处理' : feedback.status === 'adopted' ? '已采纳' : '已解决'}}
+          </view>
+        </view>
+      </view>
+      <view class="fb-content">{{feedback.content}}</view>
+      
+      <view class="fb-actions">
+        <view class="action-btn" bindtap="toggleLike">
+          <image class="action-icon" src="{{feedback.is_liked ? '/images/点赞.png' : '/images/点赞.png'}}" style="filter: {{feedback.is_liked ? 'none' : 'grayscale(100%)'}}"></image>
+          <text class="action-count" style="color: {{feedback.is_liked ? '#ff5252' : '#999'}}">{{feedback.likes || 0}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 回复列表 -->
+    <view class="replies-section" wx:if="{{feedback.replies && feedback.replies.length > 0}}">
+      <view class="section-title">全部回复 ({{feedback.replies.length}})</view>
+      <view class="reply-list">
+        <view class="reply-item {{item.admin_id ? 'admin' : ''}}" wx:for="{{feedback.replies}}" wx:key="id">
+          <image class="reply-avatar" src="{{item.replier.avatar_url || '/images/蓝天白云.jpg'}}"></image>
+          <view class="reply-content-box">
+            <view class="reply-header">
+              <text class="reply-name">{{item.replier.nick_name}}</text>
+              <text class="admin-badge" wx:if="{{item.admin_id}}">官方</text>
+              <text class="reply-time">{{item.create_time_formatted}}</text>
+              <view class="reply-delete-btn" wx:if="{{item.user_id === currentUserId && !item.admin_id}}" data-reply-id="{{item.id}}" catchtap="deleteReply">
+                <image src="/images/清除.png" class="reply-delete-icon"></image>
+              </view>
+            </view>
+            <view class="reply-text">{{item.content}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view id="bottom-anchor"></view>
+  </scroll-view>
+
+  <!-- 底部回复输入框 -->
+  <view class="bottom-bar">
+    <view class="anonymous-toggle" bindtap="toggleAnonymous">
+      <icon type="{{isAnonymous ? 'success' : 'circle'}}" size="16" color="{{isAnonymous ? '#6366f1' : '#c0c4cc'}}" />
+      <text>匿名</text>
+    </view>
+    <input 
+      class="reply-input" 
+      placeholder="写下你的回复..." 
+      value="{{replyContent}}" 
+      bindinput="onInput"
+      bindfocus="onReplyFocus"
+      bindblur="onReplyBlur"
+      focus="{{replyInputFocus}}"
+      cursor="{{replyCursor}}"
+      cursor-spacing="20"
+      hold-keyboard="true"
+      confirm-type="send"
+      bindconfirm="submitReply"
+    />
+    <view class="send-btn {{replyContent.length > 0 ? 'active' : ''}}" bindtap="submitReply">发送</view>
+  </view>
+</view>
+</view>

@@ -1,0 +1,59 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<!-- 自定义导航栏 -->
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">{{title}}</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<scroll-view class="protocol-container" scroll-y>
+  <view class="protocol-body">
+    <block wx:for="{{contentBlocks}}" wx:key="index">
+      <!-- 标题等级 1 -->
+      <view class="block-h1" wx:if="{{item.type === 'h1'}}">{{item.text}}</view>
+      
+      <!-- 标题等级 2 -->
+      <view class="block-h2" wx:elif="{{item.type === 'h2'}}">{{item.text}}</view>
+      
+      <!-- 标题等级 3 -->
+      <view class="block-h3" wx:elif="{{item.type === 'h3'}}">{{item.text}}</view>
+      
+      <!-- 普通段落 -->
+      <view class="block-p" wx:elif="{{item.type === 'p'}}">
+        <text decode user-select>{{item.text}}</text>
+      </view>
+      
+      <!-- 引用块/提示块 -->
+      <view class="block-quote" wx:elif="{{item.type === 'quote'}}">
+        <text user-select>{{item.text}}</text>
+      </view>
+
+      <!-- 列表内容 -->
+      <view class="block-list" wx:elif="{{item.type === 'list'}}">
+        <view class="list-item" wx:for="{{item.items}}" wx:for-item="listItem" wx:key="index">
+          <view class="list-dot"></view>
+          <text class="list-text" user-select>{{listItem}}</text>
+        </view>
+      </view>
+
+      <!-- 表格内容 -->
+      <view class="block-table" wx:elif="{{item.type === 'table'}}">
+        <view class="table-header">
+          <view class="th" wx:for="{{item.header}}" wx:key="index">{{item}}</view>
+        </view>
+        <view class="table-row" wx:for="{{item.rows}}" wx:for-item="row" wx:key="index">
+          <view class="td" wx:for="{{row}}" wx:key="index">{{item}}</view>
+        </view>
+      </view>
+
+      <!-- 分隔线 -->
+      <view class="block-hr" wx:elif="{{item.type === 'hr'}}"></view>
+    </block>
+  </view>
+  <view class="safe-area-bottom"></view>
+</scroll-view>
+</view>

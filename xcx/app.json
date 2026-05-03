@@ -1,0 +1,61 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/search/search",
+    "pages/mnemonic/index",
+    "pages/memo/index",
+    "pages/profile/profile",
+    "pages/favorites/favorites",
+    "pages/history/history",
+    "pages/shop/shop",
+    "pages/invite/invite",
+    "pages/invite-code/invite-code",
+    "pages/study/study",
+    "pages/progress/progress",
+    "pages/feedback/feedback",
+    "pages/feedback_list/feedback_list",
+    "pages/feedback_detail/feedback_detail",
+    "pages/materials/materials",
+    "pages/protocol/protocol",
+    "pages/about-app/index",
+    "pages/about-author/index",
+    "pages/study-time/study-time"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "山药铭记",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "resizable": true,
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#6366f1",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/首页.png",
+        "selectedIconPath": "images/首页.png"
+      },
+      {
+        "pagePath": "pages/mnemonic/index",
+        "text": "随时背",
+        "iconPath": "images/收藏.png",
+        "selectedIconPath": "images/收藏.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "images/我的.png",
+        "selectedIconPath": "images/我的.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

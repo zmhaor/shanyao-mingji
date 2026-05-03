@@ -1,0 +1,115 @@
+<!-- 全局装饰背景 (同首页) -->
+<view class="page-bg-global">
+  <view class="deco-orb deco-orb-1"></view>
+  <view class="deco-orb deco-orb-2"></view>
+  <view class="deco-orb deco-orb-3"></view>
+</view>
+
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<!-- 自定义导航栏 (同步收藏页结构) -->
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">邀请好友</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<view class="main-container">
+  <!-- 标题区域 -->
+  <view class="title-section">
+    <view class="main-title">
+      <text>邀友</text>
+      <text class="highlight">共学</text>
+    </view>
+    <text class="subtitle">让知识传播，让积分翻倍。</text>
+  </view>
+
+  <!-- 核心奖励特写 -->
+  <view class="premium-reward-card">
+    <view class="reward-content">
+      <view class="reward-main">
+        <text class="prefix">最高可得</text>
+        <view class="val-group">
+          <text class="points">{{inviteRewardPoints + invitedUserRewardPoints}}</text>
+          <text class="unit">积分</text>
+        </view>
+      </view>
+      <image class="reward-img" src="/images/邀请好友.png" mode="aspectFit" />
+    </view>
+    
+    <view class="reward-detail-grid">
+      <view class="detail-cell">
+        <text class="l">邀人奖励</text>
+        <text class="v">+{{inviteRewardPoints}}</text>
+      </view>
+      <view class="v-line"></view>
+      <view class="detail-cell">
+        <text class="l">新人好礼</text>
+        <text class="v">+{{invitedUserRewardPoints}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能卡片组 -->
+  <view class="action-cards">
+    <!-- 我的邀请码 (软玻璃风格) -->
+    <view class="soft-card code-box" bindtap="onCopyCode">
+      <view class="card-header">
+        <text class="card-label">我的邀请码</text>
+        <view class="card-actions">
+          <view class="copy-badge">点击复制</view>
+          <view class="share-btn-wrap">
+            <button class="inline-share-btn" open-type="share" catchtap="noop">立即分享</button>
+          </view>
+        </view>
+      </view>
+      <text class="code-display">{{inviteCode || '...'}}</text>
+    </view>
+
+    <!-- 邀请统计 (并排显示) -->
+    <view class="stats-row">
+      <view class="soft-card stat-item">
+        <text class="s-val">{{inviteCount}}</text>
+        <text class="s-lab">成功邀请</text>
+      </view>
+      <view class="soft-card stat-item">
+        <text class="s-val">{{rewardPoints}}</text>
+        <text class="s-lab">累计积分</text>
+      </view>
+    </view>
+
+    <!-- 绑定输入区 (移至此处，并优化 UI) -->
+    <view class="bind-section-uniform soft-card">
+      <view class="bind-header">
+        <text class="b-title">绑定推荐人</text>
+        <text class="b-tip">仅限注册 {{inviteEligibleDays}} 天内的新用户</text>
+      </view>
+      <view class="search-style-input">
+        <input 
+          class="f-input" 
+          placeholder="输入好友邀约码" 
+          placeholder-class="p-cls"
+          bindinput="onInviteCodeInput"
+          value="{{inputInviteCode}}"
+          disabled="{{inviteCodeSubmitted}}"
+        />
+        <view 
+          class="f-btn {{inviteCodeSubmitted ? 'f-done' : ''}}" 
+          bindtap="{{inviteCodeSubmitted ? '' : 'onSubmitInviteCode'}}"
+        >
+          {{inviteCodeSubmitted ? '已绑定' : '提交'}}
+        </view>
+      </view>
+      <view class="success-hint" wx:if="{{inviteCodeSubmitted}}">推荐人已绑定成功，你仍然可以继续分享邀请更多新用户</view>
+    </view>
+  </view>
+
+  <!-- 页脚说明 -->
+  <view class="footer-copy">
+    <text>· 山药铭记 学习锦囊 ·</text>
+  </view>
+</view>
+</view>

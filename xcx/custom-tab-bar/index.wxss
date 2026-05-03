@@ -1,0 +1,151 @@
+.tab-bar-container {
+  position: fixed;
+  bottom: calc(15px + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+@media screen and (min-width: 500px) {
+  .tab-bar-container {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    max-width: var(--max-width) !important;
+  }
+}
+
+.tab-bar {
+  width: 100%; /* 将宽度改回之前可能占满或者更宽的状态 */
+  max-width: 500px;
+  height: 60px; /* 进一步降低导航栏高度能凸显圆形按钮，且减少割裂感 */
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: 30px; /* 调整圆角对应高度 */
+  display: flex;
+  padding: 0 10px; /* 左右间距加大因为宽度变了 */
+  box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  pointer-events: auto;
+  margin: 0 20px; /* 两边留点空隙，如果是悬浮态 */
+}
+
+/* 夜间模式适配 */
+.dark-mode .tab-bar {
+  background: rgba(28, 28, 36, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+}
+
+.tab-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; 
+  padding-bottom: 8px;
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* 侧边按钮布局 */
+.tab-bar-item:not(.special-tab) .icon-wrapper {
+  width: 24px; /* 缩小一点配合降低的高度 */
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.tab-bar-item.active:not(.special-tab) .icon-wrapper {
+  transform: translateY(-2px);
+}
+
+.tab-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* 中间特殊按钮 (随时背) - 核心修复区 */
+.special-tab::before {
+  content: "";
+  display: block;
+  height: 30px; /* 进一步减少占位高度，因为我们把按钮往下移了更多 */
+  width: 1px;
+}
+
+.special-tab .icon-wrapper {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 54px; /* 再缩小一点 */
+  height: 54px;
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 50%;
+  transform: translate(-50%, -16px); /* 进一步往下移动，与主条结合更紧密 */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  border: 3px solid #fff; /* 边框同比例缩小 */
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dark-mode .special-tab .icon-wrapper {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: #1c1c24;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.special-tab .tab-icon {
+  width: 32px; /* 图标同比例缩小 */
+  height: 32px;
+}
+
+.special-tab.active .icon-wrapper {
+  transform: translate(-50%, -16px) scale(1.1); 
+  background: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.tab-text {
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  z-index: 5;
+  transition: all 0.3s ease;
+}
+
+.tab-bar-item.active .tab-text {
+  color: #1e293b;
+}
+
+.dark-mode .tab-bar-item.active .tab-text {
+  color: #f1f5f9;
+}
+
+.active-dot {
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #6366f1;
+}
+
+.tab-bar-item.active:nth-child(2) .active-dot {
+  background: #a855f7;
+}
+
+.tab-bar-item.active:nth-child(3) .active-dot {
+  background: #ec4899;
+}
+

@@ -1,0 +1,73 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">资料下载</text>
+    <view class="points-badge" bindtap="goToInvite" style="margin-right: {{capsuleSafeRight}}px;">
+      <image src="/images/商城.png" mode="aspectFit" style="width: 12px; height: 12px;" />
+      <view class="points-badge-text">
+        <text class="points-badge-value">{{userPoints}}</text>
+        <text class="points-badge-unit">积分</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<view class="favorites-container">
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">资料加载中...</text>
+  </view>
+
+  <view class="empty-state" wx:elif="{{materials.length === 0}}">
+    <image class="empty-icon" src="/images/分享.png" mode="aspectFit" />
+    <text class="empty-text">暂无可下载资料</text>
+    <text class="empty-hint">后台上架新资料后，这里会自动展示</text>
+  </view>
+
+  <view class="favorites-list" wx:else>
+    <view class="material-card" wx:for="{{materials}}" wx:key="id">
+      <view class="card-head">
+        <view class="file-mark">
+          <view class="material-badge">
+            <text class="badge-text">{{item.fileExtText}}</text>
+          </view>
+          <view class="file-lines">
+            <view class="line one"></view>
+            <view class="line two"></view>
+            <view class="line three"></view>
+          </view>
+        </view>
+        <view class="status-col">
+          <view class="points-chip">
+            <text class="points-chip-value">{{item.pointsRequired || 0}}</text>
+            <text class="points-chip-unit">积分</text>
+          </view>
+          <view class="redeemed-chip" wx:if="{{item.hasExchanged}}">
+            <text class="redeemed-chip-text">已兑换</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="card-body">
+        <text class="item-name">{{item.title}}</text>
+        <text class="item-desc" wx:if="{{item.description}}">{{item.description}}</text>
+        <view class="meta-row">
+          <text class="meta-tag">{{item.fileSizeText}}</text>
+          <text class="meta-tag" wx:if="{{item.createTimeText}}">{{item.createTimeText}}</text>
+        </view>
+      </view>
+
+      <view class="card-footer">
+        <view class="preview-btn {{!item.hasPreview ? 'is-disabled' : ''}}" catchtap="onPreviewTap" data-item="{{item}}">
+          <text class="preview-btn-text">{{item.hasPreview ? '预览' : '暂无预览'}}</text>
+        </view>
+        <view class="open-btn" catchtap="onDownloadTap" data-item="{{item}}">
+          <text class="open-btn-text">{{item.actionText}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+</view>

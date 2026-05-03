@@ -1,0 +1,75 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="container">
+  <!-- 自定义导航栏 -->
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="onBack">
+        <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+      </view>
+      <text class="nav-title">用户反馈</text>
+      <view class="placeholder"></view>
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view class="tab-item {{currentTab === 'hot' ? 'active' : ''}}" bindtap="switchTab" data-tab="hot">热门排序</view>
+    <view class="tab-item {{currentTab === 'new' ? 'active' : ''}}" bindtap="switchTab" data-tab="new">最新排序</view>
+    <view class="tab-item {{currentTab === 'mine' ? 'active' : ''}}" bindtap="switchTab" data-tab="mine">我的反馈</view>
+  </view>
+
+  <scroll-view scroll-y class="list-container" bindscrolltolower="loadMore" refresher-enabled bindrefresherrefresh="onRefresh" refresher-triggered="{{isRefreshing}}">
+    <view class="empty-state" wx:if="{{feedbacks.length === 0 && !loading}}">
+      <image class="empty-img" src="/images/默认.jpg" mode="aspectFit"></image>
+      <text class="empty-text">暂无反馈数据</text>
+    </view>
+    
+    <view class="feedback-item" wx:for="{{feedbacks}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+      <view class="fb-header">
+        <view class="user-info">
+          <image class="avatar" src="{{item.user ? item.user.avatar_url : '/images/默认.jpg'}}" mode="aspectFill"></image>
+          <view class="name-block">
+            <text class="nickname">{{item.user ? item.user.nick_name : '匿名用户'}}</text>
+            <view class="unread-badge" wx:if="{{item.unread_reply_count > 0}}">
+              <text class="unread-badge-text">{{item.unread_reply_count}}</text>
+            </view>
+          </view>
+        </view>
+        <view style="display: flex; align-items: center;">
+          <view class="delete-btn" wx:if="{{item.user_id === currentUserId}}" catchtap="deleteFeedback" data-id="{{item.id}}" data-index="{{index}}">
+            <image src="/images/清除.png" class="delete-icon"></image>
+          </view>
+          <view class="status {{item.status}}">
+            {{item.status === 'pending' ? '待处理' : item.status === 'adopted' ? '已采纳' : '已解决'}}
+          </view>
+        </view>
+      </view>
+      <view class="fb-content">{{item.content}}</view>
+      <view class="fb-footer">
+        <text class="time">{{item.create_time_formatted}}</text>
+        <view class="actions">
+          <view class="action-btn" catchtap="toggleLike" data-id="{{item.id}}" data-index="{{index}}">
+            <image class="action-icon" src="{{item.is_liked ? '/images/点赞.png' : '/images/点赞.png'}}" style="filter: {{item.is_liked ? 'none' : 'grayscale(100%)'}}"></image>
+            <text class="action-count" style="color: {{item.is_liked ? '#ff5252' : '#999'}}">{{item.likes}}</text>
+          </view>
+          <view class="action-btn action-link" style="margin-left: 10px;">
+            <text class="action-link-text">{{item.unread_reply_count > 0 ? '查看未读回复' : '回复讨论'}}</text>
+          </view>
+        </view>
+      </view>
+      <!-- 展示最新回复提示 -->
+      <view class="last-reply" wx:if="{{item.last_reply}}">
+        <text class="reply-tag">最新回复</text>
+        <text class="reply-text">{{item.last_reply}}</text>
+      </view>
+    </view>
+    
+    <view class="loading-state" wx:if="{{loading}}">加载中...</view>
+    <view class="no-more" wx:if="{{!loading && !hasMore && feedbacks.length > 0}}">没有更多了</view>
+  </scroll-view>
+
+  <!-- 悬浮的我要反馈按钮 -->
+  <view class="float-btn" bindtap="goToFeedback">
+    <text class="float-btn-text">我要反馈</text>
+  </view>
+</view>
+</view>

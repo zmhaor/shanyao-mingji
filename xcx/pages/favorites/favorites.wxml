@@ -1,0 +1,45 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<!-- 自定义导航栏 -->
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">我的收藏</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<!-- 收藏列表 -->
+<view class="favorites-container">
+  <view class="empty-state" wx:if="{{favorites.length === 0}}">
+    <image class="empty-icon" src="/images/收藏.png" mode="aspectFit" />
+    <text class="empty-text">还没有收藏任何工具</text>
+    <text class="empty-hint">去首页发现更多好用的学习工具吧</text>
+    <view class="btn-primary" bindtap="goToHome">
+      去首页
+    </view>
+  </view>
+
+  <view class="favorites-list" wx:else>
+    <view 
+      class="favorite-item" 
+      wx:for="{{favorites}}" 
+      wx:key="id"
+      data-id="{{item.toolId}}"
+      bindtap="onItemTap"
+    >
+      <view class="item-icon">
+        <image class="tool-icon-img" src="{{item.icon}}" mode="aspectFit" style="width: 40px; height: 40px;"></image>
+      </view>
+      <view class="item-info">
+        <text class="item-name">{{item.name}}</text>
+        <text class="item-desc">{{item.description}}</text>
+      </view>
+      <view class="item-action" catchtap="onUnfavorite" data-id="{{item.toolId}}">
+        <image class="unfavorite-icon" src="/images/收藏.png" mode="aspectFit" />
+      </view>
+    </view>
+  </view>
+</view>
+</view>

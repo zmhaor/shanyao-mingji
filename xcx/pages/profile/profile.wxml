@@ -1,0 +1,221 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+  <block wx:if="{{isLoggedIn}}">
+    <view class="custom-nav">
+      <view class="nav-content">
+        <text class="nav-title">我的</text>
+      </view>
+    </view>
+
+    <view class="profile-container">
+      <view class="profile-header">
+        <view class="user-info">
+          <view class="avatar-wrapper" bindtap="onOpenProfileSetup">
+            <image class="user-avatar" src="{{userAvatar || userInfo.avatarUrl || '/images/默认.jpg'}}" mode="aspectFill"></image>
+            <view class="vip-badge" wx:if="{{userInfo.points >= 1000}}">VIP</view>
+          </view>
+          <view class="user-meta">
+            <view class="name-container" bindtap="onOpenProfileSetup">
+              <text class="user-name">{{userInfo.nickName}}</text>
+              <image class="edit-icon" src="/images/修改.png" mode="aspectFit"></image>
+            </view>
+            <view class="id-container">
+              <text class="user-id" bindtap="onCopyId" bindlongpress="onCopyId">ID: {{userInfo.id}}</text>
+              <image class="copy-icon" src="/images/复制.png" bindtap="onCopyId" bindlongpress="onCopyId" mode="aspectFit"></image>
+            </view>
+            <text class="user-email" wx:if="{{userInfo.email && userInfo.email !== 'null' && userInfo.email !== ''}}">{{userInfo.email}}</text>
+          </view>
+          <view class="logout-btn" bindtap="onLogout">
+            <text>退出</text>
+          </view>
+        </view>
+        
+        <view class="stats-bar">
+          <view class="stat-box" bindtap="onViewFavorites">
+            <text class="stat-num">{{stats.favorites}}</text>
+            <text class="stat-label">我的收藏</text>
+          </view>
+          <view class="stat-box" bindtap="onViewStudyTime">
+            <text class="stat-num">{{stats.studyTime}}</text>
+            <text class="stat-label">学习时长</text>
+          </view>
+          <view class="stat-box" bindtap="onViewPoints">
+            <text class="stat-num">{{stats.points}}</text>
+            <text class="stat-label">积分</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="menu-section">
+        <text class="section-title">我的服务</text>
+        <view class="menu-grid">
+          <view class="menu-item" wx:for="{{menuItems}}" wx:key="id" data-item="{{item}}" bindtap="onMenuTap">
+            <view class="menu-icon-wrapper">
+              <view class="menu-icon">
+                <image src="{{item.icon}}" mode="aspectFit" style="width: 95%; height: 95%;" />
+              </view>
+              <text class="menu-badge" wx:if="{{item.badge}}">{{item.badge}}</text>
+            </view>
+            <text class="menu-name">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="settings-group-section" wx:for="{{settingGroups}}" wx:key="title" wx:for-item="group">
+        <text class="group-title" wx:if="{{group.title}}">{{group.title}}</text>
+        <view class="settings-list-card">
+          <view class="setting-item" wx:for="{{group.items}}" wx:key="id" data-item="{{item}}" bindtap="{{item.isSwitch ? '' : 'onSettingTap'}}">
+            <view class="setting-left">
+              <image class="setting-icon" src="{{item.iconPath}}" mode="aspectFit" wx:if="{{item.iconPath}}"></image>
+              <text class="setting-icon" wx:else>{{item.icon}}</text>
+              <text class="setting-name">{{item.name}}</text>
+            </view>
+            <view class="setting-right">
+              <text class="setting-value" wx:if="{{item.value}}">{{item.value}}</text>
+              <text class="arrow">›</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="footer-protocols">
+        <block wx:for="{{footerProtocols}}" wx:key="name">
+          <text class="protocol-link" bindtap="onMenuTap" data-item="{{item}}">{{item.name}}</text>
+          <text class="protocol-divider" wx:if="{{index < footerProtocols.length - 1}}">|</text>
+        </block>
+      </view>
+    </view>
+  </block>
+
+  <!-- 全屏登录 -->
+  <view class="login-fullscreen" wx:else>
+    <view class="login-bg-orb orb-1"></view>
+    <view class="login-bg-orb orb-2"></view>
+    <view class="login-bg-orb orb-3"></view>
+    <view class="login-bg-orb orb-4"></view>
+    
+    <view class="login-content-wrapper glass-card">
+      <view class="login-header">
+        <view class="logo-glass-wrapper">
+          <image class="login-logo" src="/images/默认.jpg" mode="aspectFill"></image>
+        </view>
+        <text class="login-title">欢迎回来</text>
+        <text class="login-subtitle">探索更高效的学习方式</text>
+      </view>
+
+      <view class="login-actions">
+        <button 
+          class="wechat-login-btn" 
+          bindtap="onWechatLogin"
+        >
+          <image class="login-icon" src="/images/微信.png" mode="aspectFit"></image>
+          <text class="wechat-text">微信快捷登录</text>
+        </button>
+
+        <view class="login-privacy-tip">
+          <text>本工具不会获取微信账号、手机号等隐私信息</text>
+        </view>
+
+        <view class="email-login-container">
+          <view class="email-login-btn" bindtap="onEmailLogin">
+            <text>使用邮箱账号登录</text>
+            <text class="arrow-right">›</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 邮箱登录表单 -->
+    <view class="email-login-overlay" wx:if="{{showEmailLogin}}" bindtap="onCancelEmailLogin">
+      <view class="email-login-form" catchtap="preventBubble">
+        <view class="form-header">
+          <text class="form-title">邮箱登录</text>
+          <view class="close-btn-circle" bindtap="onCancelEmailLogin">✕</view>
+        </view>
+
+        <view class="input-group">
+          <text class="input-label">邮箱地址</text>
+          <view class="premium-input-wrapper">
+            <input 
+              class="premium-input" 
+              type="text" 
+              placeholder="example@email.com" 
+              placeholder-class="input-placeholder"
+              value="{{email}}"
+              bindinput="onEmailInput"
+            />
+          </view>
+        </view>
+
+        <view class="input-group">
+          <text class="input-label">密码</text>
+          <view class="premium-input-wrapper">
+            <input 
+              class="premium-input" 
+              type="text" 
+              placeholder="请输入密码" 
+              placeholder-class="input-placeholder"
+              value="{{password}}"
+              bindinput="onPasswordInput"
+            />
+          </view>
+        </view>
+
+        <view class="btn-primary email-login-submit" hover-class="btn-hover" bindtap="onSubmitEmailLogin">登录</view>
+        <view class="form-footer">
+          <text class="footer-hint">暂不支持自助注册，请联系管理员开通</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 完善资料表单 -->
+  <view class="profile-setup-overlay" wx:if="{{showProfileSetup}}" bindtap="onCancelProfileSetup">
+    <view class="profile-setup-form" catchtap="preventBubble">
+      <view class="setup-header" style="position: relative;">
+        <text class="setup-title">完善个人资料</text>
+        <text class="setup-subtitle">让我们更好地认识你</text>
+        <text class="close-btn" bindtap="onCancelProfileSetup" style="position: absolute; right: 0; top: -5px;">✕</text>
+      </view>
+
+      <view class="setup-avatar-section">
+        <button class="avatar-btn" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+          <image class="setup-avatar" src="{{tempAvatarUrl || '/images/默认.jpg'}}" mode="aspectFill"></image>
+          <view class="camera-icon-wrapper">
+            <text class="camera-icon">📷</text>
+          </view>
+        </button>
+        <text class="avatar-hint">点击设置头像</text>
+      </view>
+
+      <view class="input-group">
+        <text class="input-label">昵称</text>
+        <input 
+          class="input-field" 
+          type="nickname" 
+          placeholder="请输入或获取微信昵称" 
+          value="{{tempNickname}}"
+          bindblur="onNicknameBlur"
+        />
+      </view>
+
+      <view class="btn-group-row">
+        <view class="btn-primary flex-1" bindtap="onSubmitProfileSetup">保存资料</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 公告弹窗 -->
+  <view class="notice-modal-overlay" wx:if="{{isLoggedIn && showNoticeModal}}" catchtap="onConfirmNotice">
+    <view class="notice-modal-content" catchtap="preventBubble">
+      <view class="notice-header">
+        <text class="notice-title">{{currentNotice.title || '系统公告'}}</text>
+      </view>
+      <scroll-view class="notice-body" scroll-y>
+        <text class="notice-text">{{currentNotice.content}}</text>
+      </scroll-view>
+      <view class="notice-footer">
+        <view class="notice-confirm-btn" catchtap="onConfirmNotice">确认</view>
+      </view>
+    </view>
+  </view>
+</view>

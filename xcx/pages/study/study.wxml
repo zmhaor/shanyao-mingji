@@ -1,0 +1,952 @@
+<wxs module="memo">
+module.exports = {
+  getAssociation: function(text) {
+    if (!text) return '';
+    // 查找"联想："后的内容
+    var idx = text.indexOf('联想：');
+    if (idx === -1) {
+      idx = text.indexOf('联想:');
+    }
+    if (idx > -1) {
+      return text.substring(idx);
+    }
+    return '';
+  },
+  getKoujue: function(text) {
+    if (!text) return '';
+    // 查找"口诀："后的内容，到"联想："或结尾
+    var idx = text.indexOf('口诀：');
+    if (idx === -1) {
+      idx = text.indexOf('口诀:');
+    }
+    if (idx > -1) {
+      var endIdx = text.indexOf('\n联想：');
+      if (endIdx === -1) {
+        endIdx = text.indexOf('\n联想:');
+      }
+      if (endIdx === -1) {
+        endIdx = text.indexOf('联想：');
+      }
+      if (endIdx === -1) {
+        endIdx = text.indexOf('联想:');
+      }
+      if (endIdx > -1) {
+        return text.substring(0, endIdx);
+      }
+      return text;
+    }
+    return text;
+  }
+}
+</wxs>
+
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="container {{isDarkMode ? 'dark-mode-page' : ''}}">
+
+  <view class="header-wrapper {{headerBehind ? 'header-behind' : ''}}">
+    <view class="header-content">
+      <block wx:if="{{currentTab === 'read'}}">
+        <view class="header-row">
+          <view class="header-left">
+            <view class="home-btn" bindtap="backToHome">
+              <image src="/images/返回.png" class="home-icon" mode="aspectFit" />
+            </view>
+            <text class="page-title">全文通读</text>
+          </view>
+        </view>
+        <view class="header-toolbar">
+          <view class="toolbar-btn search-btn-white" bindtap="toggleSearch">
+            <image src="/images/搜索.png" class="toolbar-btn-icon" mode="aspectFit" />
+            <text class="toolbar-btn-text">搜索</text>
+          </view>
+          <view class="toolbar-btn more-btn-colorful" bindtap="openActionSheet">
+            <image src="/images/更多.png" class="toolbar-btn-icon" mode="aspectFit" />
+            <text class="toolbar-btn-text">更多</text>
+          </view>
+          <!-- 背诵组激活提示 -->
+          <view class="group-active-pill" wx:if="{{activeGroupId}}" bindtap="deactivateGroup">
+            <view class="group-active-dot"></view>
+            <text class="group-active-name">{{activeGroupName}}</text>
+            <view class="group-active-close">
+              <wux-icon type="ios-close" size="14" color="#ff9500" />
+            </view>
+          </view>
+        </view>
+        <view class="search-box" wx:if="{{showSearchBox}}">
+          <input class="search-input" style="{{isDarkMode ? 'background:#2d2d3a;border-color:#3d3d4a;color:#e8eaf0;' : ''}}" placeholder-class="search-input-placeholder" placeholder="搜索内容" bindinput="handleSearch" value="{{searchText}}" confirm-type="search" focus="{{showSearchBox}}" />
+          <view class="btn-search-clear" wx:if="{{searchText}}" bindtap="clearSearch">✕</view>
+        </view>
+      </block>
+
+      <block wx:elif="{{currentTab === 'catalog'}}">
+        <view class="header-row">
+          <view class="header-left">
+            <view class="home-btn" bindtap="backToHome">
+              <image src="/images/返回.png" class="home-icon" mode="aspectFit" />
+            </view>
+            <text class="page-title">检查记录</text>
+          </view>
+        </view>
+        <view class="header-toolbar">
+          <view class="toolbar-btn" bindtap="toggleExpandAll">
+            <wux-icon type="{{isAllExpanded ? 'ios-eye-off' : 'ios-eye'}}" size="14" color="{{isDarkMode ? '#9ba3b5' : '#636366'}}" />
+            <text class="toolbar-btn-text">{{isAllExpanded ? '隐藏' : '展开'}}</text>
+          </view>
+          <view class="toolbar-btn danger" bindtap="resetAll">
+            <wux-icon type="ios-trash" size="14" color="#ff3b30" />
+            <text class="toolbar-btn-text">清空</text>
+          </view>
+          <!-- 背诵组激活提示 -->
+          <view class="group-active-pill" wx:if="{{activeGroupId}}" bindtap="deactivateGroup">
+            <view class="group-active-dot"></view>
+            <text class="group-active-name">{{activeGroupName}}</text>
+            <view class="group-active-close">
+              <wux-icon type="ios-close" size="14" color="#ff9500" />
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <block wx:elif="{{currentTab === 'quiz'}}">
+        <view class="header-row">
+          <view class="header-left">
+            <view class="home-btn" bindtap="backToHome">
+              <image src="/images/返回.png" class="home-icon" mode="aspectFit" />
+            </view>
+            <text class="page-title">记忆抽查</text>
+          </view>
+        </view>
+      </block>
+
+      <block wx:elif="{{currentTab === 'rank'}}">
+        <view class="header-row">
+          <view class="header-left">
+            <view class="home-btn" bindtap="backToHome">
+              <image src="/images/返回.png" class="home-icon" mode="aspectFit" />
+            </view>
+            <text class="page-title">重点排序</text>
+          </view>
+        </view>
+        <view class="header-toolbar">
+          <view class="toolbar-btn" bindtap="toggleExpandAll">
+            <wux-icon type="{{isAllExpanded ? 'ios-eye-off' : 'ios-eye'}}" size="14" color="{{isDarkMode ? '#9ba3b5' : '#636366'}}" />
+            <text class="toolbar-btn-text">{{isAllExpanded ? '隐藏' : '展开'}}</text>
+          </view>
+          <view class="toolbar-btn danger" bindtap="resetAll">
+            <wux-icon type="ios-trash" size="14" color="#ff3b30" />
+            <text class="toolbar-btn-text">清空</text>
+          </view>
+          <!-- 背诵组激活提示 -->
+          <view class="group-active-pill" wx:if="{{activeGroupId}}" bindtap="deactivateGroup">
+            <view class="group-active-dot"></view>
+            <text class="group-active-name">{{activeGroupName}}</text>
+            <view class="group-active-close">
+              <wux-icon type="ios-close" size="14" color="#ff9500" />
+            </view>
+          </view>
+        </view>
+      </block>
+
+    </view>
+  </view>
+
+  <scroll-view 
+    wx:if="{{currentTab !== 'quiz'}}" 
+    scroll-y 
+    class="content-area" 
+    enable-flex 
+    enhanced="{{true}}"
+    fast-deceleration="{{true}}"
+    enable-passive-scroll="{{true}}"
+    show-scrollbar="{{false}}"
+    scroll-with-animation
+    enable-back-to-top 
+    scroll-top="{{scrollTopVal}}"
+    scroll-into-view="{{scrollIntoViewTarget}}"
+    bindscroll="onScroll"
+    bindscrolltolower="loadMoreCards"
+    lower-threshold="300"
+  >
+    
+    <view class="read-container" wx:if="{{currentTab === 'read'}}">
+      <view class="read-list">
+        <block wx:for="{{entries}}" wx:key="index" wx:for-item="entry">
+          <view class="chapter-header" wx:if="{{(toolType === 'zhongyao' || toolType === 'fangji') && entry.chapterPos === 'start' && entry.chapter}}">
+            <text class="chapter-title">{{entry.chapter}}</text>
+          </view>
+          <view class="section-header" wx:if="{{(toolType === 'zhongyao' || toolType === 'fangji' || toolType === 'jinkui' || toolType === 'wenbing') && entry.sectionPos === 'start' && entry.section}}">
+            <view class="section-title-wrap">
+              <view class="section-line"></view>
+              <text class="section-title">{{entry.section}}</text>
+              <view class="section-line"></view>
+            </view>
+          </view>
+          <view id="entry-{{index}}" class="read-item {{toolType === 'zhongyao' ? 'group-theme-' + entry.colorTheme + ' group-pos-' + entry.groupPos : ''}}">
+            <view class="group-label-inner theme-bg-{{entry.colorTheme}}" wx:if="{{toolType === 'zhongyao' && entry.group && (entry.groupPos === 'start' || entry.groupPos === 'single')}}">
+              {{entry.group}}
+            </view>
+            <view class="read-header-row">
+              <view class="group-dot theme-dot-{{entry.colorTheme}}" wx:if="{{toolType === 'zhongyao'}}"></view>
+              <view class="level-badge level-{{entry.level}}" wx:if="{{showLevels}}">{{entry.level === 1 ? '一级' : '二级'}}</view>
+              <text class="read-title">{{entry.title}}</text>
+
+            </view>
+            <view class="read-body">
+              <block wx:if="{{toolType === 'fangji'}}">
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['composition']}}">
+                  <text class="tag-label blue">组成</text>
+                  <text class="read-text">{{entry.composition}}</text>
+                </view>
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                  <text class="tag-label green">功用</text>
+                  <text class="read-text">{{entry.function}}</text>
+                </view>
+                <view class="read-note" wx:if="{{(!tagFilter.length || tagFilterMap['formula_song']) && (entry.formula_song_v1 || entry.formula_song) || (!tagFilter.length || tagFilterMap['composition_memo'] || tagFilterMap['association']) && entry.composition_memo || (!tagFilter.length || tagFilterMap['function_memo'] || tagFilterMap['association']) && entry.function_memo}}">
+                   <view class="read-note-item formula-song-item" wx:if="{{(!tagFilter.length || tagFilterMap['formula_song']) && (entry.formula_song_v1 || entry.formula_song)}}">
+                     <view class="formula-song-header">
+                       <text class="note-tag purple">方歌</text>
+                       <view class="formula-song-tabs" wx:if="{{entry.formula_song_v2}}">
+                         <view class="formula-song-tab {{formulaSongVersions[entry.name] !== 'v2' ? 'active' : ''}}"
+                               catchtap="toggleFormulaSongVersion" data-version="v1" data-name="{{entry.name}}">版本一</view>
+                         <view class="formula-song-tab {{formulaSongVersions[entry.name] === 'v2' ? 'active' : ''}}"
+                               catchtap="toggleFormulaSongVersion" data-version="v2" data-name="{{entry.name}}">版本二</view>
+                       </view>
+                     </view>
+                      <view class="read-note-content" style="text-align: center;">
+                        <text decode user-select>{{formulaSongVersions[entry.name] === 'v2' && entry.formula_song_v2 ? entry.formula_song_v2 : (entry.formula_song_v1 || entry.formula_song)}}</text>
+                      </view>
+                   </view>
+                    <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['composition_memo'] || tagFilterMap['association']) && entry.composition_memo}}">
+                      <text class="note-tag">组记</text>
+                      <view class="read-note-content"><text decode>{{tagFilterMap['composition_association'] && !tagFilterMap['composition_memo'] ? memo.getAssociation(entry.composition_memo) || '' : (!tagFilterMap['composition_association'] && tagFilterMap['composition_memo'] ? memo.getKoujue(entry.composition_memo) : entry.composition_memo)}}</text></view>
+                    </view>
+                    <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['function_memo'] || tagFilterMap['association']) && entry.function_memo}}">
+                      <text class="note-tag yellow">功记</text>
+                      <view class="read-note-content"><text decode>{{tagFilterMap['function_association'] && !tagFilterMap['function_memo'] ? memo.getAssociation(entry.function_memo) || '' : (!tagFilterMap['function_association'] && tagFilterMap['function_memo'] ? memo.getKoujue(entry.function_memo) : entry.function_memo)}}</text></view>
+                    </view>
+                </view>
+              </block>
+              <block wx:elif="{{toolType === 'zhongyao'}}">
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                  <text class="tag-label green">功效</text>
+                  <text class="read-text">{{entry.text}}</text>
+                </view>
+                <view class="read-note" wx:if="{{(!tagFilter.length || tagFilterMap['memo']) && entry.zhongyao_memo || (!tagFilter.length || tagFilterMap['association']) && entry.zhongyao_association}}">
+                   <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['memo']) && entry.zhongyao_memo}}">
+                     <text class="note-tag yellow">口诀</text>
+                     <view class="read-note-content"><text decode>{{entry.zhongyao_memo}}</text></view>
+                   </view>
+                   <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['association']) && entry.zhongyao_association}}">
+                     <text class="note-tag blue">联想</text>
+                     <view class="read-note-content highlight"><text decode>{{entry.zhongyao_association}}</text></view>
+                   </view>
+                </view>
+              </block>
+              <block wx:else>
+                <text class="read-text" decode user-select>{{entry.text}}</text>
+                <view class="read-note" wx:if="{{entry.note || (entry.customNotes && entry.customNotes.length > 0)}}">
+                   <block wx:if="{{entry.customNotes && entry.customNotes.length > 0}}">
+                      <view class="read-note-item {{note.isTitle ? 'is-formula' : ''}}" wx:for="{{entry.customNotes}}" wx:key="label" wx:for-item="note">
+                        <text class="note-tag {{note.color}}">{{note.label}}</text>
+                        <view class="read-note-content"><text decode>{{note.isTitle ? note.label : note.content}}</text></view>
+                      </view>
+                   </block>
+                   <block wx:else>
+                      <text class="note-tag">注</text>{{entry.note}}
+                   </block>
+                </view>
+              </block>
+            </view>
+          </view>
+        </block>
+      </view>
+      <view class="end-tip">- 全文完 -</view>
+    </view>
+
+    <view class="view-container catalog-view-content" wx:if="{{currentTab === 'catalog'}}">
+      <block wx:if="{{displayList.length > 0}}">
+        <block wx:for="{{displayList}}" wx:key="originalIndex">
+          <view class="chapter-header" wx:if="{{(toolType === 'zhongyao' || toolType === 'fangji') && item.chapterPos === 'start' && item.chapter}}">
+            <text class="chapter-title">{{item.chapter}}</text>
+          </view>
+          <view class="section-header" wx:if="{{(toolType === 'zhongyao' || toolType === 'fangji' || toolType === 'jinkui' || toolType === 'wenbing') && item.sectionPos === 'start' && item.section}}">
+            <view class="section-title-wrap">
+              <view class="section-line"></view>
+              <text class="section-title">{{item.section}}</text>
+              <view class="section-line"></view>
+            </view>
+          </view>
+          <view class="card {{item.statusClass}} {{toolType === 'zhongyao' ? 'group-theme-' + item.colorTheme + ' group-pos-' + item.groupPos : ''}}">
+            <view class="group-label-inner theme-bg-{{item.colorTheme}}" wx:if="{{toolType === 'zhongyao' && item.group && (item.groupPos === 'start' || item.groupPos === 'single')}}">
+              {{item.group}}
+            </view>
+            <view class="card-header">
+              <view class="group-dot theme-dot-{{item.colorTheme}}" wx:if="{{toolType === 'zhongyao'}}"></view>
+              <view class="title-group">
+                <view class="card-meta">
+                  <text class="card-id">#{{item.originalIndex + 1}}</text>
+                  <view class="level-badge small level-{{item.level}}" wx:if="{{showLevels}}">{{item.level}}</view>
+                </view>
+              <view class="card-title">
+                <text>{{item.title}}</text>
+              </view>
+            </view>
+            <view style="display: flex; align-items: center; gap: 4px;">
+               <view class="btn-reset-icon" catchtap="resetSingle" data-index="{{item.originalIndex}}">↺</view>
+
+                <view class="btn-icon-circle" catchtap="toggleExpand" data-index="{{index}}" data-type="note" wx:if="{{(toolType === 'fangji' && (item.composition_memo || item.function_memo)) || (toolType === 'zhongyao' && (item.zhongyao_memo || item.zhongyao_association)) || (toolType !== 'fangji' && toolType !== 'zhongyao' && item.note)}}">💡</view>
+                <view class="btn-icon-circle" catchtap="toggleExpand" data-index="{{index}}" data-type="text">📝</view>
+            </view>
+          </view>
+
+          <view class="content-container {{item.showText || item.showNote ? 'show' : ''}}" wx:if="{{item.showText || item.showNote}}">
+            <view class="note-box" wx:if="{{item.showNote}}">
+              <block wx:if="{{toolType === 'fangji'}}">
+                <view class="read-note-item formula-song-item" wx:if="{{(!tagFilter.length || tagFilterMap['formula_song']) && (item.formula_song_v1 || item.formula_song)}}">
+                  <view class="formula-song-header">
+                    <text class="note-tag purple">方歌</text>
+                    <view class="formula-song-tabs" wx:if="{{item.formula_song_v2}}">
+                      <view class="formula-song-tab {{formulaSongVersions[item.name] !== 'v2' ? 'active' : ''}}"
+                            catchtap="toggleFormulaSongVersion" data-version="v1" data-name="{{item.name}}">版本一</view>
+                      <view class="formula-song-tab {{formulaSongVersions[item.name] === 'v2' ? 'active' : ''}}"
+                            catchtap="toggleFormulaSongVersion" data-version="v2" data-name="{{item.name}}">版本二</view>
+                    </view>
+                  </view>
+                   <view class="read-note-content" style="text-align: center;">
+                     <text decode user-select>{{formulaSongVersions[item.name] === 'v2' && item.formula_song_v2 ? item.formula_song_v2 : (item.formula_song_v1 || item.formula_song)}}</text>
+                   </view>
+                </view>
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['composition_memo'] || tagFilterMap['association']) && item.composition_memo}}">
+                  <text class="note-tag">组记</text>
+                  <view class="read-note-content"><text decode user-select>{{tagFilterMap['composition_association'] && !tagFilterMap['composition_memo'] ? memo.getAssociation(item.composition_memo) || '' : (!tagFilterMap['composition_association'] && tagFilterMap['composition_memo'] ? memo.getKoujue(item.composition_memo) : item.composition_memo)}}</text></view>
+                </view>
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['function_memo'] || tagFilterMap['association']) && item.function_memo}}">
+                  <text class="note-tag yellow">功记</text>
+                  <view class="read-note-content"><text decode user-select>{{tagFilterMap['function_association'] && !tagFilterMap['function_memo'] ? memo.getAssociation(item.function_memo) || '' : (!tagFilterMap['function_association'] && tagFilterMap['function_memo'] ? memo.getKoujue(item.function_memo) : item.function_memo)}}</text></view>
+                </view>
+              </block>
+              <block wx:elif="{{toolType === 'zhongyao'}}">
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['memo']) && item.zhongyao_memo}}">
+                  <text class="note-tag yellow">口诀</text>
+                  <view class="read-note-content"><text decode user-select>{{item.zhongyao_memo}}</text></view>
+                </view>
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['association']) && item.zhongyao_association}}">
+                  <text class="note-tag blue">联想</text>
+                  <view class="read-note-content highlight"><text decode user-select>{{item.zhongyao_association}}</text></view>
+                </view>
+              </block>
+              <block wx:else>
+                <block wx:if="{{item.customNotes && item.customNotes.length > 0}}">
+                  <view class="read-note-item {{notes.isTitle ? 'is-formula' : ''}}" wx:for="{{item.customNotes}}" wx:key="label" wx:for-item="notes">
+                    <text class="note-tag {{notes.color}}">{{notes.label}}</text>
+                    <view class="read-note-content"><text decode user-select>{{notes.isTitle ? notes.label : notes.content}}</text></view>
+                  </view>
+                </block>
+                <block wx:else><text decode user-select>{{item.note}}</text></block>
+              </block>
+            </view>
+
+            <view class="text-box" wx:if="{{item.showText}}">
+              <block wx:if="{{toolType === 'fangji'}}">
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['composition']}}">
+                  <text class="tag-label blue">组成</text>
+                  <text class="content-text-main" decode user-select>{{item.composition}}</text>
+                </view>
+                <view class="info-row" style="margin-top: 6px;" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                  <text class="tag-label green">功用</text>
+                  <text class="content-text-main" decode user-select>{{item.function}}</text>
+                </view>
+              </block>
+              <block wx:elif="{{toolType === 'zhongyao'}}">
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                  <text class="tag-label green">功效</text>
+                  <text class="content-text-main" decode user-select>{{item.text}}</text>
+                </view>
+              </block>
+              <block wx:else><text class="content-text-main" decode user-select>{{item.text}}</text></block>
+            </view>
+          </view>
+
+          <view class="card-footer">
+            <view class="footer-left">
+              <view class="history-label" wx:if="{{item.historyDots.length === 0}}">暂无记录</view>
+              <scroll-view wx:else scroll-x class="dots-scroll" scroll-left="{{item.scrollLeftVal}}" scroll-with-animation>
+                <view class="dots">
+                  <view wx:for="{{item.historyDots}}" wx:for-item="dot" wx:key="index" class="dot {{dot && dot.r !== undefined ? (dot.r ? 'win' : 'loss') : (dot ? 'win' : 'loss')}}"></view>
+                  <view style="width: 5px; flex-shrink: 0;"></view>
+                </view>
+              </scroll-view>
+            </view>
+            <view class="btn-group">
+              <view class="btn-action btn-no" catchtap="recordResult" data-index="{{item.originalIndex}}" data-result="{{false}}">忘了</view>
+              <view class="btn-action btn-ok" catchtap="recordResult" data-index="{{item.originalIndex}}" data-result="{{true}}">记得</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <block wx:else>
+      <view class="empty-tip">未找到内容</view>
+    </block>
+    </view>
+
+    <view class="view-container" wx:if="{{currentTab === 'rank'}}">
+      <block wx:if="{{rankList.length > 0}}">
+        <block wx:for="{{rankList}}" wx:key="originalIndex">
+          <view class="card {{item.statusClass}} {{toolType === 'zhongyao' ? 'group-theme-' + item.colorTheme + ' group-pos-' + item.groupPos : ''}}">
+            <view class="group-label-inner theme-bg-{{item.colorTheme}}" wx:if="{{toolType === 'zhongyao' && item.group && (item.groupPos === 'start' || item.groupPos === 'single')}}">
+              {{item.group}}
+            </view>
+            <view class="card-header">
+              <view class="group-dot theme-dot-{{item.colorTheme}}" wx:if="{{toolType === 'zhongyao'}}"></view>
+              <view class="title-group">
+                <view class="card-meta">
+                  <text class="card-id">#{{item.originalIndex + 1}}</text>
+                  <view class="level-badge small level-{{item.level}}" wx:if="{{showLevels}}">{{item.level}}</view>
+                </view>
+              <view class="card-title">
+                <text>{{item.title}}</text>
+              </view>
+            </view>
+            <view style="display: flex; align-items: center; gap: 4px;">
+               <view class="btn-reset-icon" catchtap="resetSingle" data-index="{{item.originalIndex}}">↺</view>
+
+                <view class="btn-icon-circle" catchtap="toggleRankExpand" data-index="{{index}}" data-type="note" wx:if="{{(toolType === 'fangji' && (item.composition_memo || item.function_memo)) || (toolType === 'zhongyao' && (item.zhongyao_memo || item.zhongyao_association)) || (toolType !== 'fangji' && toolType !== 'zhongyao' && item.note)}}">💡</view>
+                <view class="btn-icon-circle" catchtap="toggleRankExpand" data-index="{{index}}" data-type="text">📝</view>
+            </view>
+          </view>
+
+          <view class="content-container {{item.showText || item.showNote ? 'show' : ''}}" wx:if="{{item.showText || item.showNote}}">
+            <view class="note-box" wx:if="{{item.showNote}}">
+              <block wx:if="{{toolType === 'fangji'}}">
+                <view class="read-note-item formula-song-item" wx:if="{{(!tagFilter.length || tagFilterMap['formula_song']) && (item.formula_song_v1 || item.formula_song)}}">
+                  <view class="formula-song-header">
+                    <text class="note-tag purple">方歌</text>
+                    <view class="formula-song-tabs" wx:if="{{item.formula_song_v2}}">
+                      <view class="formula-song-tab {{formulaSongVersions[item.name] !== 'v2' ? 'active' : ''}}"
+                            catchtap="toggleFormulaSongVersion" data-version="v1" data-name="{{item.name}}">版本一</view>
+                      <view class="formula-song-tab {{formulaSongVersions[item.name] === 'v2' ? 'active' : ''}}"
+                            catchtap="toggleFormulaSongVersion" data-version="v2" data-name="{{item.name}}">版本二</view>
+                    </view>
+                  </view>
+                   <view class="read-note-content" style="text-align: center;">
+                     <text decode user-select>{{formulaSongVersions[item.name] === 'v2' && item.formula_song_v2 ? item.formula_song_v2 : (item.formula_song_v1 || item.formula_song)}}</text>
+                   </view>
+                </view>
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['composition_memo'] || tagFilterMap['association']) && item.composition_memo}}">
+                  <text class="note-tag">组记</text>
+                  <view class="read-note-content"><text decode user-select>{{tagFilterMap['composition_association'] && !tagFilterMap['composition_memo'] ? memo.getAssociation(item.composition_memo) || '' : (!tagFilterMap['composition_association'] && tagFilterMap['composition_memo'] ? memo.getKoujue(item.composition_memo) : item.composition_memo)}}</text></view>
+                </view>
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['function_memo'] || tagFilterMap['association']) && item.function_memo}}">
+                  <text class="note-tag yellow">功记</text>
+                  <view class="read-note-content"><text decode user-select>{{tagFilterMap['function_association'] && !tagFilterMap['function_memo'] ? memo.getAssociation(item.function_memo) || '' : (!tagFilterMap['function_association'] && tagFilterMap['function_memo'] ? memo.getKoujue(item.function_memo) : item.function_memo)}}</text></view>
+                </view>
+              </block>
+              <block wx:elif="{{toolType === 'zhongyao'}}">
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['memo']) && item.zhongyao_memo}}">
+                  <text class="note-tag yellow">口诀</text>
+                  <view class="read-note-content"><text decode user-select>{{item.zhongyao_memo}}</text></view>
+                </view>
+                <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['association']) && item.zhongyao_association}}">
+                  <text class="note-tag blue">联想</text>
+                  <view class="read-note-content"><text decode user-select>{{item.zhongyao_association}}</text></view>
+                </view>
+              </block>
+              <block wx:else>
+                <block wx:if="{{item.customNotes && item.customNotes.length > 0}}">
+                  <view class="read-note-item {{notes.isTitle ? 'is-formula' : ''}}" wx:for="{{item.customNotes}}" wx:key="label" wx:for-item="notes">
+                    <text class="note-tag {{notes.color}}">{{notes.label}}</text>
+                    <view class="read-note-content"><text decode user-select>{{notes.isTitle ? notes.label : notes.content}}</text></view>
+                  </view>
+                </block>
+                <block wx:else><text decode user-select>{{item.note}}</text></block>
+              </block>
+            </view>
+
+            <view class="text-box" wx:if="{{item.showText}}">
+              <block wx:if="{{toolType === 'fangji'}}">
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['composition']}}">
+                  <text class="tag-label blue">组成</text>
+                  <text class="content-text-main" decode user-select>{{item.composition}}</text>
+                </view>
+                <view class="info-row" style="margin-top: 6px;" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                  <text class="tag-label green">功用</text>
+                  <text class="content-text-main" decode user-select>{{item.function}}</text>
+                </view>
+              </block>
+              <block wx:elif="{{toolType === 'zhongyao'}}">
+                <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                  <text class="tag-label green">功效</text>
+                  <text class="content-text-main" decode user-select>{{item.text}}</text>
+                </view>
+              </block>
+              <block wx:else><text class="content-text-main" decode user-select>{{item.text}}</text></block>
+            </view>
+          </view>
+
+          <view class="card-footer">
+            <view class="footer-left">
+              <view class="history-label" wx:if="{{item.historyDots.length === 0}}">暂无记录</view>
+              <scroll-view wx:else scroll-x class="dots-scroll" scroll-left="{{item.scrollLeftVal}}" scroll-with-animation>
+                <view class="dots">
+                  <view wx:for="{{item.historyDots}}" wx:for-item="dot" wx:key="index" class="dot {{dot && dot.r !== undefined ? (dot.r ? 'win' : 'loss') : (dot ? 'win' : 'loss')}}"></view>
+                  <view style="width: 5px; flex-shrink: 0;"></view>
+                </view>
+              </scroll-view>
+            </view>
+            <view class="btn-group">
+              <view class="btn-action btn-no" catchtap="recordResult" data-index="{{item.originalIndex}}" data-result="{{false}}">忘了</view>
+              <view class="btn-action btn-ok" catchtap="recordResult" data-index="{{item.originalIndex}}" data-result="{{true}}">记得</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <block wx:else>
+      <view class="empty-tip">太棒了，暂无错题</view>
+    </block>
+    </view>
+  </scroll-view>
+
+  <view class="quiz-container {{isFromMnemonic ? 'mnemonic-mode' : ''}}" wx:if="{{currentTab === 'quiz'}}">
+    <view class="quiz-card">
+      <view class="quiz-badge" wx:if="{{showLevels}}">
+        <view class="level-badge level-{{quizItem.level}}">{{quizItem.level === 1 ? '一级' : '二级'}}</view>
+      </view>
+      <view class="quiz-title-row">
+        <view class="quiz-title">{{quizItem.title}}</view>
+
+      </view>
+      <view style="text-align: center; font-size: 13px; color: #8e8e93; margin-bottom: 20px;">{{quizStatusText}}</view>
+      
+      <view class="quiz-content">
+        <block wx:if="{{toolType === 'fangji'}}">
+          <view class="btn-peek" bindtap="toggleQuizPeek" wx:if="{{quizMode !== 'study'}}">{{quizShowAnswer ? '🙈 隐藏提示' : '👀 查看提示'}}</view>
+          <scroll-view scroll-y class="quiz-scroll-area" wx:if="{{quizShowAnswer || quizMode === 'study'}}">
+            <view class="text-box show-block">
+              <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['composition']}}">
+                <text class="tag-label blue">组成</text>
+                <text class="content-text-main">{{quizItem.composition}}</text>
+              </view>
+              <view class="info-row" style="margin-top: 6px;" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                <text class="tag-label green">功用</text>
+                <text class="content-text-main">{{quizItem.function}}</text>
+              </view>
+            </view>
+            <view class="note-box show-block" wx:if="{{((!tagFilter.length || tagFilterMap['formula_song']) && (quizItem.formula_song_v1 || quizItem.formula_song)) || ((!tagFilter.length || tagFilterMap['composition_memo'] || tagFilterMap['association']) && quizItem.composition_memo) || ((!tagFilter.length || tagFilterMap['function_memo'] || tagFilterMap['association']) && quizItem.function_memo)}}" style="margin-top: 8px;">
+              <view class="read-note-item formula-song-item" wx:if="{{(!tagFilter.length || tagFilterMap['formula_song']) && (quizItem.formula_song_v1 || quizItem.formula_song)}}">
+                <view class="formula-song-header">
+                  <text class="note-tag purple">方歌</text>
+                  <view class="formula-song-tabs" wx:if="{{quizItem.formula_song_v2}}">
+                    <view class="formula-song-tab {{formulaSongVersions[quizItem.name] !== 'v2' ? 'active' : ''}}"
+                          catchtap="toggleFormulaSongVersion" data-version="v1" data-name="{{quizItem.name}}">版本一</view>
+                    <view class="formula-song-tab {{formulaSongVersions[quizItem.name] === 'v2' ? 'active' : ''}}"
+                          catchtap="toggleFormulaSongVersion" data-version="v2" data-name="{{quizItem.name}}">版本二</view>
+                  </view>
+                </view>
+                   <view class="read-note-content" style="text-align: center;">
+                     <text decode user-select>{{formulaSongVersions[quizItem.name] === 'v2' && quizItem.formula_song_v2 ? quizItem.formula_song_v2 : (quizItem.formula_song_v1 || quizItem.formula_song)}}</text>
+                   </view>
+                 </view>
+                 <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['composition_memo'] || tagFilterMap['association']) && quizItem.composition_memo}}">
+                   <text class="note-tag">组记</text>
+                 <view class="read-note-content"><text decode user-select>{{tagFilterMap['composition_association'] && !tagFilterMap['composition_memo'] ? memo.getAssociation(quizItem.composition_memo) || '' : (!tagFilterMap['composition_association'] && tagFilterMap['composition_memo'] ? memo.getKoujue(quizItem.composition_memo) : quizItem.composition_memo)}}</text></view>
+              </view>
+              <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['function_memo'] || tagFilterMap['association']) && quizItem.function_memo}}">
+                <text class="note-tag yellow">功记</text>
+                <view class="read-note-content"><text decode user-select>{{tagFilterMap['function_association'] && !tagFilterMap['function_memo'] ? memo.getAssociation(quizItem.function_memo) || '' : (!tagFilterMap['function_association'] && tagFilterMap['function_memo'] ? memo.getKoujue(quizItem.function_memo) : quizItem.function_memo)}}</text></view>
+              </view>
+            </view>
+          </scroll-view>
+        </block>
+        <block wx:elif="{{toolType === 'zhongyao'}}">
+          <view class="btn-peek" bindtap="toggleQuizPeek" wx:if="{{quizMode !== 'study'}}">{{quizShowAnswer ? '🙈 隐藏答案' : '👀 查看答案'}}</view>
+          <scroll-view scroll-y class="quiz-scroll-area" wx:if="{{quizShowAnswer || quizMode === 'study'}}">
+            <view class="text-box show-block">
+              <view class="info-row" wx:if="{{!tagFilter.length || tagFilterMap['function']}}">
+                <text class="tag-label green">功效</text>
+                <text class="content-text-main">{{quizItem.text}}</text>
+              </view>
+            </view>
+            <view class="read-note" wx:if="{{((!tagFilter.length || tagFilterMap['memo']) && quizItem.zhongyao_memo) || ((!tagFilter.length || tagFilterMap['association']) && quizItem.zhongyao_association)}}" style="margin-top: 10px; padding: 10px; background: #fcfcfc; border-radius: 8px; border: 0.5px solid #eee;">
+               <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['memo']) && quizItem.zhongyao_memo}}">
+                 <text class="note-tag yellow">口诀</text>
+                 <view class="read-note-content"><text decode>{{quizItem.zhongyao_memo}}</text></view>
+               </view>
+               <view class="read-note-item" wx:if="{{(!tagFilter.length || tagFilterMap['association']) && quizItem.zhongyao_association}}">
+                 <text class="note-tag blue">联想</text>
+                 <view class="read-note-content highlight"><text decode>{{quizItem.zhongyao_association}}</text></view>
+               </view>
+            </view>
+          </scroll-view>
+        </block>
+        <block wx:else>
+          <view class="btn-peek" bindtap="toggleQuizPeek" wx:if="{{quizMode !== 'study'}}">{{quizShowAnswer ? '🙈 隐藏原文' : '👀 查看原文'}}</view>
+          <scroll-view scroll-y class="quiz-scroll-area" enhanced="{{true}}" fast-deceleration="{{true}}" show-scrollbar="{{false}}">
+            <view class="note-box show-block" wx:if="{{(quizItem.level === 1 || quizMode === 'study') && (quizItem.note || (quizItem.customNotes && quizItem.customNotes.length > 0))}}">
+              <block wx:if="{{quizItem.customNotes && quizItem.customNotes.length > 0}}">
+                <view class="read-note-item {{note.isTitle ? 'is-formula' : ''}}" wx:for="{{quizItem.customNotes}}" wx:key="label" wx:for-item="note">
+                  <text class="note-tag {{note.color}}">{{note.label}}</text>
+                  <view class="read-note-content"><text decode user-select>{{note.isTitle ? note.label : note.content}}</text></view>
+                </view>
+              </block>
+              <block wx:else>{{quizItem.note}}</block>
+            </view>
+            <text class="text-box show-block" wx:if="{{quizShowAnswer || quizMode === 'study'}}" decode user-select>{{quizItem.text}}</text>
+            <view style="height: 40px; width: 100%;"></view>
+          </scroll-view>
+        </block>
+      </view>
+
+      <view class="quiz-actions">
+        <block wx:if="{{!quizFinishedRound}}">
+          <block wx:if="{{quizMode === 'study'}}">
+            <view class="quiz-btn-row">
+              <view class="btn-lg btn-lg-back" bindtap="backQuiz" wx:if="{{quizStack.length > 0}}">← 上一题</view>
+              <view class="btn-lg btn-lg-next" bindtap="nextQuiz">下一题 →</view>
+            </view>
+          </block>
+          <block wx:else>
+            <view class="btn-lg btn-lg-no" bindtap="handleQuizResult" data-result="{{false}}">😵 忘啦</view>
+            <view class="btn-lg btn-lg-ok" bindtap="handleQuizResult" data-result="{{true}}">😎 记得</view>
+          </block>
+        </block>
+        <view wx:else class="quiz-btn-row">
+          <view class="btn-lg btn-lg-back" bindtap="backQuiz" wx:if="{{quizStack.length > 0}}">← 上一题</view>
+          <view class="btn-lg btn-lg-next" bindtap="nextQuiz">下一题 →</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部导航栏 (沉浸式模式下隐藏) -->
+  <view class="nav-bar" wx:if="{{!isFromMnemonic}}">
+    <view class="nav-item {{currentTab === 'read' ? 'active' : ''}}" bindtap="switchTab" data-tab="read">
+      <text class="nav-icon">📜</text>
+      <text class="nav-text">通读</text>
+    </view>
+    <view class="nav-item {{currentTab === 'catalog' ? 'active' : ''}}" bindtap="switchTab" data-tab="catalog">
+      <text class="nav-icon">📖</text>
+      <text class="nav-text">检查</text>
+    </view>
+    <view class="nav-item {{currentTab === 'quiz' ? 'active' : ''}}" bindtap="switchTab" data-tab="quiz">
+      <text class="nav-icon">🎲</text>
+      <text class="nav-text">抽查</text>
+    </view>
+    <view class="nav-item {{currentTab === 'rank' ? 'active' : ''}}" bindtap="switchTab" data-tab="rank">
+      <text class="nav-icon">🔥</text>
+      <text class="nav-text">重点</text>
+    </view>
+  </view>
+
+  <!-- === 返回顶部按钮 === -->
+  <view class="btn-back-top" catchtap="scrollToTop" wx:if="{{showBackTop}}">
+    <text>回到\n顶部</text>
+  </view>
+
+
+  <!-- === 背诵组创建/编辑弹窗 === -->
+  <view class="hidden-modal-mask" wx:if="{{showGroupCreate}}" bindtap="closeGroupCreate"></view>
+  <view class="hidden-modal-content hidden-modal-content-create {{showGroupCreate ? 'show' : ''}}" wx:if="{{showGroupCreate}}">
+    <view class="hidden-modal-handle"></view>
+    <view class="hidden-modal-header">
+      <view class="hidden-modal-title">
+        {{_editingGroupId ? '编辑背诵组' : '新建背诵组'}}
+      </view>
+      <view class="hidden-modal-close" bindtap="closeGroupCreate">✕</view>
+    </view>
+
+    <!-- 组名 + 搜索 + 操作栏 -->
+    <view class="group-toolbar">
+      <view class="group-toolbar-row">
+        <view class="group-toolbar-field group-toolbar-field-name {{groupNameError ? 'group-toolbar-field-error' : ''}}">
+          <wux-icon type="ios-create" size="14" color="{{groupNameError ? '#dc2626' : '#007aff'}}" />
+          <input class="group-name-input {{groupNameError ? 'group-name-input-error' : ''}}" placeholder="名称" value="{{newGroupName}}" bindinput="onGroupNameInput" focus="{{showGroupCreate}}" />
+        </view>
+        <view class="group-toolbar-field group-toolbar-field-search">
+          <wux-icon type="ios-search" size="14" color="#8e8e93" />
+          <input class="group-search-input" placeholder="筛选条文..." value="{{groupSearchText}}" bindinput="onGroupSearchInput" />
+        </view>
+      </view>
+      <view class="group-toolbar-actions">
+        <view class="group-select-all-btn" bindtap="toggleSelectAllGroup">全选</view>
+        <text class="group-select-count">{{groupSelectedCount}}</text>
+      </view>
+    </view>
+    <text class="group-field-error" wx:if="{{groupNameError}}">请输入背诵组名称</text>
+
+    <!-- 条文勾选列表 -->
+    <scroll-view scroll-y class="hidden-list">
+      <block wx:for="{{groupSelectItems}}" wx:key="uniqueKey">
+        <view class="group-select-item {{item.selected ? 'group-select-item-active' : ''}}" 
+              bindtap="toggleGroupItem" data-key="{{item.uniqueKey}}">
+          <view class="group-select-check">{{item.selected ? '☑' : '☐'}}</view>
+          <view class="group-select-info">
+            <view class="group-select-title">
+              <view class="level-badge small level-{{item.level}}" wx:if="{{showLevels}}">{{item.level}}</view>
+              {{item.title}}
+            </view>
+            <view class="group-select-text {{item.text ? '' : 'group-select-text-empty'}}">{{item.text ? item.text + '...' : '占位'}}</view>
+          </view>
+        </view>
+      </block>
+    </scroll-view>
+
+    <view class="hidden-modal-footer">
+      <view class="btn-batch-hide" bindtap="saveEditGroup">保存背诵组 ({{groupSelectedCount}} 条)</view>
+    </view>
+  </view>
+
+  <!-- === 内容过滤弹窗 === -->
+  <view class="hidden-modal-mask" wx:if="{{showFilterModal}}" bindtap="toggleFilterModal"></view>
+  <view class="hidden-modal-content {{showFilterModal ? 'show' : ''}}" wx:if="{{showFilterModal}}">
+    <view class="hidden-modal-header">
+      <view class="hidden-modal-title">内容过滤与显示</view>
+      <view class="hidden-modal-close" bindtap="toggleFilterModal">✕</view>
+    </view>
+    
+    <view style="padding: 10px 20px 30px; display: flex; flex-direction: column; gap: 20px;">
+      
+      <!-- 显示范围 -->
+      <view>
+        <view style="font-size: 13px; color: var(--text-tertiary); margin-bottom: 10px; font-weight: 600;">显示范围</view>
+        <view style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <view class="filter-modal-tag {{filterType === 'all' && !activeGroupId ? 'active' : ''}}" bindtap="setFilterAndClose" data-type="all">全部</view>
+          <block wx:if="{{showLevels}}">
+            <view class="filter-modal-tag {{filterType === '1' && !activeGroupId ? 'active' : ''}}" bindtap="setFilterAndClose" data-type="1">一级</view>
+            <view class="filter-modal-tag {{filterType === '2' && !activeGroupId ? 'active' : ''}}" bindtap="setFilterAndClose" data-type="2">二级</view>
+          </block>
+        </view>
+      </view>
+
+      <!-- 排序方式 -->
+      <view wx:if="{{filterType === '1' && toolType !== 'neijing' && toolType !== 'jinkui' && toolType !== 'wenbing'}}">
+        <view style="font-size: 13px; color: var(--text-tertiary); margin-bottom: 10px; font-weight: 600;">排序方式</view>
+        <view style="display: flex; gap: 8px; flex-wrap: wrap;">
+           <view class="filter-modal-tag {{sortType === 'clause' ? 'active-sort' : ''}}" bindtap="toggleSortAndClose" data-sort="clause">📋 编号序</view>
+           <view class="filter-modal-tag {{sortType === 'textbook' ? 'active-sort' : ''}}" bindtap="toggleSortAndClose" data-sort="textbook">📖 课本序</view>
+        </view>
+      </view>
+
+      <!-- 内容展示 -->
+      <view wx:if="{{currentTab === 'catalog' || currentTab === 'rank'}}">
+        <view style="font-size: 13px; color: var(--text-tertiary); margin-bottom: 10px; font-weight: 600;">内容展示</view>
+        <view style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <view class="filter-modal-tag" bindtap="toggleExpandAllAndClose">{{isAllExpanded ? '🙈 隐藏全部' : '👁️ 展开全部'}}</view>
+        </view>
+      </view>
+
+    </view>
+  </view>
+
+  <!-- 底部动作面板 - 优化版 -->
+  <view class="action-sheet-mask {{showActionSheet ? 'show' : ''}}" bindtap="closeActionSheet"></view>
+  <view class="action-sheet {{showActionSheet ? 'show' : ''}}" style="{{actionSheetTopOffset > 0 ? 'top:' + actionSheetTopOffset + 'px;' : ''}}" bindtap="closeActionSheet">
+    <view class="action-sheet-panel" catchtap="noop">
+      <view class="action-sheet-handle"></view>
+      <view class="action-sheet-header">
+        <text class="action-sheet-title">更多操作</text>
+        <view class="action-sheet-dark-mode-btn" bindtap="onSheetDarkMode">
+          <text class="dark-mode-emoji">{{isDarkMode ? '☀️' : '🌙'}}</text>
+          <text class="dark-mode-text">{{isDarkMode ? '日间' : '夜间'}}</text>
+        </view>
+      </view>
+
+      <scroll-view class="action-sheet-content" scroll-y enhanced show-scrollbar="{{false}}" style="{{actionSheetContentHeight > 0 ? 'max-height:' + actionSheetContentHeight + 'px' : ''}}">
+        <!-- 显示范围 -->
+        <view class="action-sheet-section">
+          <view class="action-sheet-section-title">
+            <wux-icon type="ios-funnel" size="14" color="{{isDarkMode ? '#6b7280' : '#8e8e93'}}" />
+            <text style="margin-left: 6px;">显示范围</text>
+          </view>
+          <view class="action-sheet-tags">
+            <view class="action-sheet-tag {{filterType === 'all' && !activeGroupId ? 'active' : ''}}" bindtap="onSheetFilter" data-type="all">全部</view>
+            <block wx:if="{{showLevels}}">
+              <view class="action-sheet-tag {{filterType === '1' && !activeGroupId ? 'active' : ''}}" bindtap="onSheetFilter" data-type="1">
+                <wux-icon type="ios-star" size="14" color="{{filterType === '1' && !activeGroupId ? '#fff' : '#ff9500'}}" />
+                <text>一级</text>
+              </view>
+              <view class="action-sheet-tag {{filterType === '2' && !activeGroupId ? 'active' : ''}}" bindtap="onSheetFilter" data-type="2">
+                <wux-icon type="ios-star-half" size="14" color="{{filterType === '2' && !activeGroupId ? '#fff' : '#007aff'}}" />
+                <text>二级</text>
+              </view>
+            </block>
+            </view>
+        </view>
+
+        <!-- 背诵组 -->
+        <view class="action-sheet-section action-sheet-group-section">
+          <view class="action-sheet-section-title">
+            <wux-icon type="ios-bookmarks" size="14" color="{{isDarkMode ? '#6b7280' : '#8e8e93'}}" />
+            <text style="margin-left: 6px;">背诵组</text>
+            <view class="action-sheet-add-btn" bindtap="onSheetCreateGroup">
+              <wux-icon type="ios-add" size="16" color="#007aff" />
+              <text>新建背诵组</text>
+            </view>
+          </view>
+          <view class="action-sheet-group-subtitle">将常背条文单独成组，快速进入针对性复习</view>
+          <view class="action-sheet-group-list" wx:if="{{customGroups.length > 0}}">
+            <view class="action-sheet-group-card {{activeGroupId === item.id ? 'active-group-card' : ''}}" 
+                  wx:for="{{customGroups}}" wx:key="id">
+              <view class="group-card-content" bindtap="onSheetGroupSelect" data-id="{{item.id}}">
+                <view class="group-card-info">
+                  <text class="group-card-name">{{item.name}}</text>
+                  <text class="group-card-count">{{item.clauseNums.length}} 条</text>
+                </view>
+                <view class="group-card-arrow" wx:if="{{activeGroupId !== item.id}}">
+                  <wux-icon type="ios-arrow-forward" size="14" color="#c7c7cc" />
+                </view>
+                <view class="group-card-active-icon" wx:if="{{activeGroupId === item.id}}">
+                  <wux-icon type="ios-checkmark" size="18" color="#007aff" />
+                </view>
+              </view>
+              <view class="group-card-actions">
+                <view class="group-card-action-btn" catchtap="editGroup" data-id="{{item.id}}">
+                  <wux-icon type="ios-create" size="16" color="#007aff" />
+                </view>
+                <view class="group-card-action-btn group-card-action-del" catchtap="deleteGroup" data-id="{{item.id}}">
+                  <wux-icon type="ios-trash" size="16" color="#ff3b30" />
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="action-sheet-empty-tip" wx:else>
+            <text>暂无背诵组，点击"新建背诵组"创建</text>
+          </view>
+        </view>
+
+        <!-- 排序方式 -->
+        <view class="action-sheet-section" wx:if="{{filterType === '1' && toolType !== 'neijing' && toolType !== 'jinkui' && toolType !== 'wenbing'}}">
+          <view class="action-sheet-section-title">
+            <wux-icon type="ios-swap" size="14" color="{{isDarkMode ? '#6b7280' : '#8e8e93'}}" />
+            <text style="margin-left: 6px;">排序方式</text>
+          </view>
+          <view class="action-sheet-tags">
+            <view class="action-sheet-tag {{sortType === 'clause' ? 'active-sort' : ''}}" bindtap="onSheetSort" data-sort="clause">
+              <wux-icon type="ios-list" size="14" color="{{sortType === 'clause' ? '#cc7a00' : '#8e8e93'}}" />
+              <text>编号序</text>
+            </view>
+            <view class="action-sheet-tag {{sortType === 'textbook' ? 'active-sort' : ''}}" bindtap="onSheetSort" data-sort="textbook">
+              <wux-icon type="ios-book" size="14" color="{{sortType === 'textbook' ? '#cc7a00' : '#8e8e93'}}" />
+              <text>课本序</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 内容展示 -->
+        <view class="action-sheet-section" wx:if="{{currentTab === 'catalog' || currentTab === 'rank'}}">
+          <view class="action-sheet-section-title">
+            <wux-icon type="ios-eye" size="14" color="{{isDarkMode ? '#6b7280' : '#8e8e93'}}" />
+            <text style="margin-left: 6px;">内容展示</text>
+          </view>
+          <view class="action-sheet-tags">
+            <view class="action-sheet-tag" bindtap="onSheetExpandAll">
+              <wux-icon type="{{isAllExpanded ? 'ios-eye-off' : 'ios-eye'}}" size="14" color="#8e8e93" />
+              <text>{{isAllExpanded ? '隐藏全部' : '展开全部'}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 方歌版本切换（仅方剂工具显示） -->
+        <view class="action-sheet-section" wx:if="{{toolType === 'fangji'}}">
+          <view class="action-sheet-section-title">
+            <wux-icon type="ios-musical-notes" size="14" color="{{isDarkMode ? '#6b7280' : '#8e8e93'}}" />
+            <text style="margin-left: 6px;">方歌版本</text>
+            <text style="margin-left: 8px; font-size: 11px; color: #94a3b8;">{{formulaSongVersionSummary}}</text>
+          </view>
+          <view class="action-sheet-tags">
+            <view class="action-sheet-tag {{formulaSongVersionSummary === '版本一' ? 'active-version' : ''}}" 
+                  bindtap="onSheetFormulaSongVersion" data-version="v1">
+              <text>版本一</text>
+            </view>
+            <view class="action-sheet-tag {{formulaSongVersionSummary === '版本二' ? 'active-version' : ''}}" 
+                  bindtap="onSheetFormulaSongVersion" data-version="v2">
+              <text>版本二</text>
+            </view>
+            <view class="action-sheet-tag {{formulaSongVersionSummary === '自定义' ? 'active-version' : ''}}" 
+                  wx:if="{{formulaSongVersionSummary === '自定义'}}">
+              <text>自定义</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 标签过滤（仅方剂和中药工具显示） -->
+        <view class="action-sheet-section" wx:if="{{toolType === 'fangji' || toolType === 'zhongyao'}}">
+          <view class="action-sheet-section-title">
+            <wux-icon type="ios-pricetags" size="14" color="{{isDarkMode ? '#6b7280' : '#8e8e93'}}" />
+            <text style="margin-left: 6px;">标签过滤</text>
+            <text style="margin-left: 8px; font-size: 11px; color: #94a3b8;">{{tagFilterSheet ? tagFilterSheet.summaryText : '显示全部'}}</text>
+            <view class="action-sheet-add-btn" bindtap="onSheetTagFilterReset" wx:if="{{tagFilter.length > 0}}">
+              <text>重置</text>
+            </view>
+          </view>
+
+          <view class="tag-filter-overview">
+            <view class="tag-filter-overview-main">
+              <view class="action-sheet-tag tag-filter-overview-tag {{tagFilter.length === 0 ? 'active' : ''}}" bindtap="onSheetTagFilterReset">
+                <text>全部内容</text>
+              </view>
+              <text class="tag-filter-overview-text">{{tagFilterSheet ? tagFilterSheet.summaryText : '显示全部'}}</text>
+            </view>
+            <text class="tag-filter-overview-tip">先选内容类别，再决定是否带上记忆辅助</text>
+          </view>
+
+          <block wx:for="{{tagFilterSheet ? tagFilterSheet.sections : []}}" wx:key="id" wx:for-item="section">
+            <view class="tag-filter-card">
+              <view class="tag-filter-card-header">
+                <view class="tag-filter-card-title-wrap">
+                  <text class="tag-filter-card-title">{{section.title}}</text>
+                  <text class="tag-filter-card-desc">{{section.description}}</text>
+                </view>
+                <text class="tag-filter-card-helper" wx:if="{{section.helperText}}">{{section.helperText}}</text>
+              </view>
+
+              <view class="action-sheet-tags tag-filter-tags" wx:if="{{section.items}}">
+                <view
+                  wx:for="{{section.items}}"
+                  wx:key="key"
+                  wx:for-item="tagItem"
+                  class="action-sheet-tag tag-filter-tag {{tagItem.active ? 'active' : ''}}"
+                  bindtap="onSheetTagFilter"
+                  data-tag="{{tagItem.key}}"
+                >
+                  <text>{{tagItem.label}}</text>
+                </view>
+              </view>
+
+              <view class="tag-filter-pair-list" wx:if="{{section.pairs}}">
+                <view class="tag-filter-pair-card" wx:for="{{section.pairs}}" wx:key="id" wx:for-item="pair">
+                  <view
+                    class="action-sheet-tag tag-filter-pair-main {{pair.primary.active ? 'active' : ''}}"
+                    bindtap="onSheetTagFilter"
+                    data-tag="{{pair.primary.key}}"
+                  >
+                    <text class="tag-filter-pair-label">{{pair.primary.label}}</text>
+                    <text class="tag-filter-pair-role">主筛选</text>
+                  </view>
+                  <view class="tag-filter-pair-link">
+                    <text class="tag-filter-pair-arrow">-></text>
+                    <text class="tag-filter-pair-link-text">联动</text>
+                  </view>
+                  <view
+                    class="action-sheet-tag tag-filter-pair-sub {{pair.secondary.active ? 'active' : ''}} {{pair.secondary.linked ? 'tag-filter-linked' : ''}} {{pair.secondary.disabled ? 'tag-filter-disabled' : ''}}"
+                    bindtap="{{pair.secondary.disabled ? '' : 'onSheetTagFilter'}}"
+                    data-tag="{{pair.secondary.key}}"
+                    data-group="{{pair.secondary.group}}"
+                  >
+                    <text class="tag-filter-pair-label">{{pair.secondary.label}}</text>
+                    <text class="tag-filter-pair-role">{{pair.secondary.linked ? '跟随选中' : (pair.secondary.disabled ? '需先选主标签' : '跟随选中')}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+        </view>
+      </scroll-view>
+
+      <view class="action-sheet-cancel" bindtap="closeActionSheet">取消</view>
+    </view>
+  </view>
+
+  </view>
+</view>

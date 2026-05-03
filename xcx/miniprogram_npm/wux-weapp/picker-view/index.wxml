@@ -1,0 +1,36 @@
+<wux-spin nested spinning="{{ loading }}">
+    <view
+        class="wux-class {{ classes.wrap }}"
+        data-picker-value="{{ inputValue }}"
+        data-picker-col-value="{{ fieldNames.value }}"
+        data-picker-col-label="{{ fieldNames.label }}"
+        style="{{ styles.wrap }}"
+        bind:touchstart="onTouchStart"
+        catch:touchmove="onTouchMove"
+        bind:touchend="onTouchEnd"
+        bind:touchcancel="onTouchEnd"
+    >
+        <view class="wux-mask-class {{ maskClass }} {{ classes.mask }}" style="{{ styles.mask }} {{ extMaskStyle }}"></view>
+        <view class="wux-indicator-class {{ indicatorClass }} {{ classes.indicator }}" style="{{ styles.indicator }} {{ extIndicatorStyle }}"></view>
+        <view class="wux-content-class {{ classes.content }}" style="{{ styles.content }} {{ contentStyle }}">
+            <block wx:for="{{ common.getOptions(cols, fieldNames) }}" wx:for-item="option" wx:key="__comp_unique_key">
+                <view
+                    style="{{ styles.item }} {{ extItemStyle }}"
+                    class="{{ classes.item }} {{ !!option[fieldNames.disabled] ? prefixCls + '__item--disabled' : '' }} {{ selectedIndex === index ? prefixCls + '__item--selected' : '' }}"
+                    data-value="{{ option[fieldNames.value] }}"
+                    data-index="{{ index }}"
+                    data-disabled="{{ !!option[fieldNames.disabled] }}"
+                    catchtap="onItemClick"
+                >
+                    <block wx:if="{{ !option.labelImage }}">
+                        {{ option[fieldNames.label] }}
+                    </block>
+                    <block wx:else>
+                        <image class="{{ classes.image }}" src="{{ option.labelImage }}" style="{{ styles.image }}" />
+                    </block>
+                </view>
+            </block>
+        </view>
+    </view>
+</wux-spin>
+<wxs src="../helpers/wxs/common.wxs" module="common" />

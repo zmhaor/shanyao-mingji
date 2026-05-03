@@ -1,0 +1,10 @@
+// 导出所有管理员API
+export * from "./auth"
+export * from "./shop"
+export * from "./stats"
+export * from "./tools"
+export * from "./users"
+export * from "./categories"
+export * from "./materials"
+export * from "./content"
+export * from "./config"

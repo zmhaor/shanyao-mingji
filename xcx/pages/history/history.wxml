@@ -1,0 +1,32 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<!-- 自定义导航栏 -->
+<view class="custom-nav">
+  <view class="nav-content">
+    <view class="back-btn" bindtap="onBack">
+      <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+    </view>
+    <text class="nav-title">历史记录</text>
+    <view class="placeholder"></view>
+  </view>
+</view>
+
+<!-- 使用记录列表 -->
+<view class="history-container">
+  <view class="history-list">
+    <view class="history-item" wx:for="{{historyList}}" wx:key="id">
+      <view class="item-left">
+        <view class="item-icon">
+          <image class="tool-icon-img" src="{{item.tool.icon}}" mode="aspectFit" style="width: 36px; height: 36px;"></image>
+        </view>
+        <view class="item-info">
+          <text class="item-name">{{item.tool.name}}</text>
+          <text class="item-time">{{item.createdAt}}</text>
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{historyList.length === 0}}" class="empty-history">
+      <text>暂无使用记录</text>
+    </view>
+  </view>
+</view>
+</view>

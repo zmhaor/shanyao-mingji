@@ -1,0 +1,60 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="onBack">
+        <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+      </view>
+      <text class="nav-title">学习时长</text>
+      <view class="placeholder"></view>
+    </view>
+  </view>
+
+  <view class="study-time-container">
+    <!-- 学习总时长卡片 -->
+    <view class="total-card">
+      <view class="total-header">
+        <text class="total-label">学习总时长</text>
+        <text class="total-icon">⏱️</text>
+      </view>
+      <text class="total-value">{{totalStudyTimeFormatted}}</text>
+      <text class="total-hint">累计学习时长</text>
+    </view>
+
+    <!-- 工具使用详情列表 -->
+    <view class="tool-list-section">
+      <text class="section-title">各工具使用详情</text>
+      
+      <view class="tool-list" wx:if="{{toolDetails.length > 0}}">
+        <view class="tool-card" wx:for="{{toolDetails}}" wx:key="toolId">
+          <view class="tool-header">
+            <view class="tool-info">
+              <image class="tool-icon" src="{{item.tool.icon}}" mode="aspectFit"></image>
+              <view class="tool-meta">
+                <text class="tool-name">{{item.tool.name}}</text>
+                <text class="tool-category">{{item.tool.category}}</text>
+              </view>
+            </view>
+            <view class="tool-stats">
+              <text class="usage-count">使用 {{item.usageCount}} 次</text>
+            </view>
+          </view>
+
+          <view class="tool-duration-bar">
+            <view class="duration-progress" style="width: {{item.durationPercent}}%"></view>
+          </view>
+
+          <view class="tool-duration-info">
+            <text class="duration-label">停留时长</text>
+            <text class="duration-value">{{item.durationFormatted}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:else>
+        <text class="empty-icon">📚</text>
+        <text class="empty-text">暂无学习记录</text>
+        <text class="empty-hint">开始使用工具后，这里会显示你的学习时长和使用次数</text>
+      </view>
+    </view>
+  </view>
+</view>

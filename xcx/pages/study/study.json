@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "学习助手",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "wux-actionsheet": "wux-weapp/actionsheet/index",
+    "wux-icon": "wux-weapp/icon/index",
+    "wux-button": "wux-weapp/button/index"
+  }
+}

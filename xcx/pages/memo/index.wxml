@@ -1,0 +1,52 @@
+<view class="page-root {{isDarkMode ? 'dark-mode' : ''}}">
+<view class="memo-container">
+  <view class="header-wrapper">
+    <view class="header-content">
+      <view class="header-row">
+        <view style="display: flex; align-items: center; gap: 8px;">
+          <view class="home-btn" bindtap="backToHome">
+            <image src="/images/返回.png" class="home-icon" mode="aspectFit" />
+          </view>
+          <text class="page-title">备忘录</text>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="content">
+    <view class="input-area">
+      <textarea
+        class="memo-input"
+        placeholder="请输入备忘录内容"
+        placeholder-class="placeholder"
+        value="{{memoContent}}"
+        bindinput="onMemoInput"
+      ></textarea>
+    </view>
+    
+    <view class="action-area">
+      <button class="save-btn" bindtap="saveMemo">保存</button>
+      <button class="clear-btn" bindtap="clearMemo">清空</button>
+    </view>
+    
+    <view class="history-area">
+      <text class="history-title">历史记录</text>
+      <view class="history-list">
+        <view
+          wx:for="{{memoHistory}}"
+          wx:key="index"
+          class="history-item"
+          bindtap="loadHistory"
+          data-index="{{index}}"
+        >
+          <text class="history-content">{{item.content}}</text>
+          <text class="history-time">{{item.time}}</text>
+        </view>
+        <view wx:if="{{memoHistory.length === 0}}" class="empty-history">
+          <text>暂无历史记录</text>
+        </view>
+      </view>
+    </view>
+    </view>
+</view>
+</view>

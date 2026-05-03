@@ -1,0 +1,84 @@
+<view class="about-page">
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="onBack">
+        <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+      </view>
+      <text class="nav-title">关于山药铭记</text>
+      <view class="placeholder"></view>
+    </view>
+  </view>
+
+  <scroll-view class="page-scroll" scroll-y>
+    <view class="brand-stage">
+      <view class="brand-glow glow-left"></view>
+      <view class="brand-glow glow-right"></view>
+      <view class="brand-top">
+        <view class="brand-copy">
+          <text class="hero-eyebrow">Mini Program</text>
+          <text class="hero-title">{{aboutInfo.title}}</text>
+          <text class="hero-subtitle">{{aboutInfo.subtitle}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header block">
+        <text class="section-kicker">Version</text>
+        <view class="section-title-row">
+          <text class="section-title">版本信息</text>
+          <text class="version-tag">v{{aboutInfo.version}}</text>
+        </view>
+      </view>
+      <view class="info-grid">
+        <view class="info-item">
+          <text class="info-label">当前版本</text>
+          <text class="info-value">{{aboutInfo.version}}</text>
+        </view>
+        <view class="info-item">
+          <text class="info-label">发布日期</text>
+          <text class="info-value">{{aboutInfo.releaseDate || '待更新'}}</text>
+        </view>
+      </view>
+      <text class="release-notes">{{aboutInfo.releaseNotes}}</text>
+    </view>
+
+    <view class="section-card" wx:if="{{aboutInfo.contactEmail || aboutInfo.website}}">
+      <view class="section-header block">
+        <text class="section-kicker">Contact</text>
+        <text class="section-title">更多信息</text>
+        <text class="section-desc">方便你获取项目相关联系与地址</text>
+      </view>
+      <view class="meta-stack">
+        <view class="meta-row" wx:if="{{aboutInfo.contactEmail}}">
+          <text class="meta-label">联系邮箱</text>
+          <text class="meta-value">{{aboutInfo.contactEmail}}</text>
+        </view>
+        <view class="meta-row" wx:if="{{aboutInfo.website}}">
+          <text class="meta-label">官网链接</text>
+          <text class="meta-value">{{aboutInfo.website}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header block">
+        <text class="section-kicker">Timeline</text>
+        <text class="section-title">更新日志</text>
+        <text class="section-desc">记录每一次更顺手的改进</text>
+      </view>
+      <view class="timeline">
+        <view class="timeline-item" wx:for="{{aboutInfo.changelog}}" wx:key="index">
+          <view class="timeline-marker"></view>
+          <view class="timeline-content">
+            <view class="timeline-head">
+              <text class="timeline-version">v{{item.version}}</text>
+              <text class="timeline-date">{{item.date}}</text>
+            </view>
+            <text class="timeline-text">{{item.content}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

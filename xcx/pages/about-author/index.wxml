@@ -1,0 +1,80 @@
+<view class="author-page">
+  <view class="custom-nav">
+    <view class="nav-content">
+      <view class="back-btn" bindtap="onBack">
+        <image src="/images/返回.png" class="back-icon" mode="aspectFit" />
+      </view>
+      <text class="nav-title">关于作者</text>
+      <view class="placeholder"></view>
+    </view>
+  </view>
+
+  <scroll-view class="page-scroll" scroll-y>
+    <view class="profile-stage">
+      <view class="hero-card">
+        <view class="hero-glow glow-a"></view>
+        <view class="hero-glow glow-b"></view>
+        <image wx:if="{{authorInfo.heroImage}}" class="hero-image" src="{{authorInfo.heroImage}}" mode="aspectFill"></image>
+        <view class="hero-mask"></view>
+      </view>
+      <view class="profile-card">
+        <image class="author-avatar" src="{{authorInfo.avatar || '/images/默认.jpg'}}" mode="aspectFill"></image>
+        <view class="profile-copy">
+          <text class="author-tag">Author Profile</text>
+          <text class="author-name">{{authorInfo.name}}</text>
+          <text class="author-signature">{{authorInfo.signature}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header block">
+        <text class="section-kicker">Profile</text>
+        <text class="section-title">作者简介</text>
+      </view>
+      <text class="section-text">{{authorInfo.bio}}</text>
+      <text class="section-note" wx:if="{{authorInfo.message}}">{{authorInfo.message}}</text>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header block">
+        <text class="section-kicker">Contact</text>
+      </view>
+      <view class="contact-header">
+        <text class="section-title contact-title">{{authorInfo.wechatLabel}}</text>
+        <button class="preview-btn" bindtap="onPreviewQrCode">查看二维码</button>
+      </view>
+      <view class="qr-showcase" wx:if="{{authorInfo.wechatQrCode}}">
+        <image class="qr-thumb" src="{{authorInfo.wechatQrCode}}" mode="aspectFill" bindtap="onPreviewQrCode"></image>
+        <view class="qr-hint">
+          <text class="qr-hint-title">{{authorInfo.wechatNote}}</text>
+          <text class="qr-hint-text">点击二维码可放大预览，适合在手机端直接识别。</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card" wx:if="{{authorInfo.cooperation}}">
+      <view class="section-header block">
+        <text class="section-kicker">Cooperation</text>
+        <text class="section-title">合作说明</text>
+      </view>
+      <text class="section-text">{{authorInfo.cooperation}}</text>
+    </view>
+
+    <view class="section-card" wx:if="{{authorInfo.links.length}}">
+      <view class="section-header block">
+        <text class="section-kicker">Links</text>
+        <text class="section-title">更多链接</text>
+      </view>
+      <view class="link-list">
+        <view class="link-item" wx:for="{{authorInfo.links}}" wx:key="index">
+          <view class="link-bullet"></view>
+          <view class="link-copy">
+            <text class="link-label">{{item.label}}</text>
+            <text class="link-url">{{item.url}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>
