@@ -7,9 +7,9 @@
 ```
 ├── admin/          # 后台管理系统 (Vue 3 + Vite)
 ├── backend/        # 后端服务 (Node.js + Express + MySQL)
+├── docs/           # 项目文档 (API文档、数据库脚本)
 ├── home/           # 项目主页 (React + Vite)
 ├── xcx/            # 微信小程序
-├── 介绍文档/        # 项目文档
 └── 云端数据ison/    # 中医数据文件
 ```
 
@@ -57,7 +57,7 @@ cp .env.example .env
 4. 初始化数据库：
 ```bash
 # 导入数据库结构
-mysql -u your_username -p your_database_name < 介绍文档/content_library.sql
+mysql -u your_username -p your_database_name < docs/content_library.sql
 ```
 
 5. 启动服务：
