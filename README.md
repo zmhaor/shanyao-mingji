@@ -37,17 +37,13 @@
   <img src="home/小程序图片/各工具页面展示/伤寒速速通 抽查页.jpg" width="200" alt="抽查页">
 </p>
 
-#### 方剂速速记
+#### 方剂
 
 <p align="center">
   <img src="home/小程序图片/各工具页面展示/方剂速速记 检查页.jpg" width="200" alt="检查页">
   &nbsp;&nbsp;
   <img src="home/小程序图片/各工具页面展示/方剂速速记 抽查页.jpg" width="200" alt="抽查页">
-</p>
-
-#### 方剂轻松过
-
-<p align="center">
+  &nbsp;&nbsp;
   <img src="home/小程序图片/各工具页面展示/方剂轻松过 诵读页.jpg" width="200" alt="诵读页">
 </p>
 
@@ -61,17 +57,13 @@
   <img src="home/小程序图片/各工具页面展示/中药快快记 抽查页.jpg" width="200" alt="抽查页">
 </p>
 
-#### 内经随身背
+#### 内经
 
 <p align="center">
   <img src="home/小程序图片/各工具页面展示/内经随身背 诵读页.jpg" width="200" alt="诵读页">
   &nbsp;&nbsp;
   <img src="home/小程序图片/各工具页面展示/内经随身背 检查页.jpg" width="200" alt="检查页">
-</p>
-
-#### 内经随时背
-
-<p align="center">
+  &nbsp;&nbsp;
   <img src="home/小程序图片/各工具页面展示/内经随时背 抽查页.jpg" width="200" alt="抽查页">
 </p>
 
@@ -105,7 +97,7 @@
   <img src="home/小程序图片/随时背展示/随时背.jpg" width="200" alt="随时背">
 </p>
 
-### 特色功能
+### 背诵组功能
 
 <p align="center">
   <img src="home/小程序图片/特色功能-背诵组功能.jpg" width="200" alt="背诵组功能">
