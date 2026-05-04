@@ -353,3 +353,7 @@ const config = {
 ## 致谢
 
 感谢所有为中医传承和发展做出贡献的人！
+
+## 开源项目引用
+
+- 后台管理系统基于 [V3 Admin Vite](https://github.com/un-pany/v3-admin-vite)
