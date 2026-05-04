@@ -37,7 +37,7 @@
   <img src="home/小程序图片/各工具页面展示/伤寒速速通 抽查页.jpg" width="200" alt="抽查页">
 </p>
 
-#### 方剂
+#### 方剂速速记
 
 <p align="center">
   <img src="home/小程序图片/各工具页面展示/方剂速速记 检查页.jpg" width="200" alt="检查页">
@@ -57,7 +57,7 @@
   <img src="home/小程序图片/各工具页面展示/中药快快记 抽查页.jpg" width="200" alt="抽查页">
 </p>
 
-#### 内经
+#### 内经随身背
 
 <p align="center">
   <img src="home/小程序图片/各工具页面展示/内经随身背 诵读页.jpg" width="200" alt="诵读页">
