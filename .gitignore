@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+xcx/miniprogram_npm/
 
 # Environment files
 .env

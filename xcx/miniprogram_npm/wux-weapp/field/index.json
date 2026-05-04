@@ -1,7 +1,0 @@
-{
-    "component": true,
-    "usingComponents": {
-        "wux-cell": "../cell/index",
-        "wux-popover": "../popover/index"
-    }
-}

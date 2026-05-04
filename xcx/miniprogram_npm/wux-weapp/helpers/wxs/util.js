@@ -1,1 +1,0 @@
-"use strict";function type(t){return t.constructor===Object?"object":t.constructor===Function?"function":t.constructor===Array?"array":t.constructor===Date?"date":t.constructor===RegExp?"regExp":t.constructor===Number?"number":t.constructor===String?"string":t.constructor===Boolean?"boolean":void 0}Object.defineProperty(exports,"__esModule",{value:!0}),exports.type=type;

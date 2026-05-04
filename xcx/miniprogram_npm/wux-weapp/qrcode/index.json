@@ -1,7 +1,0 @@
-{
-    "component": true,
-    "usingComponents": {
-        "wux-spin": "../spin/index",
-        "wux-icon": "../icon/index"
-    }
-}
