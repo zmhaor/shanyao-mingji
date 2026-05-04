@@ -40,11 +40,11 @@
 #### 方剂速速记
 
 <p align="center">
+  <img src="home/小程序图片/各工具页面展示/方剂轻松过 诵读页.jpg" width="200" alt="诵读页">
+  &nbsp;&nbsp;
   <img src="home/小程序图片/各工具页面展示/方剂速速记 检查页.jpg" width="200" alt="检查页">
   &nbsp;&nbsp;
   <img src="home/小程序图片/各工具页面展示/方剂速速记 抽查页.jpg" width="200" alt="抽查页">
-  &nbsp;&nbsp;
-  <img src="home/小程序图片/各工具页面展示/方剂轻松过 诵读页.jpg" width="200" alt="诵读页">
 </p>
 
 #### 中药快快记
